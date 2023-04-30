@@ -1,9 +1,12 @@
+import { Status } from '@/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+})
 export class Survey {
   @Prop({ type: String, required: true })
   title: string;
@@ -50,6 +53,23 @@ export class Survey {
     }[];
   }[];
 
+  @Prop({
+    type: Date,
+  })
+  createdAt: Date;
+
+  @Prop({
+    type: Date,
+  })
+  updatedAt: Date;
+
+  @Prop({
+    type: String,
+    enum: Status,
+    default: Status.NORMAL,
+  })
+  status: Status;
+
   @Prop({ type: String })
   description?: string;
 
@@ -70,6 +90,9 @@ export class Survey {
         content: string;
       }[];
     }[],
+    createdAt: Date,
+    updatedAt: Date,
+    status: Status,
     description?: string,
     statistics?: (number | string)[][],
   ) {
@@ -77,6 +100,9 @@ export class Survey {
     this.author = author;
     this.date = date;
     this.questions = questions;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.status = status;
     this.description = description;
     this.statistics = statistics;
   }

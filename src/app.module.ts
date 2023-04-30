@@ -3,6 +3,7 @@ import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SurveyModule } from '@/survey/survey.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
         uri: `${process.env.DATABASE_URL}`,
       }),
     }),
+    SurveyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
