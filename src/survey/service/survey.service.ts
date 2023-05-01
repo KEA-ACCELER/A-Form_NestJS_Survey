@@ -1,3 +1,4 @@
+import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
 import { Status } from '@/common/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
@@ -24,5 +25,15 @@ export class SurveyService {
     if (!survey) throw new NotFoundException('not found');
 
     return survey;
+  }
+
+  async update(_id: Types.ObjectId, updateSurveyDto: UpdateSurveyRequestDto) {
+    await this.surveyModel.updateOne(
+      {
+        _id,
+        status: Status.NORMAL,
+      },
+      { $set: updateSurveyDto },
+    );
   }
 }
