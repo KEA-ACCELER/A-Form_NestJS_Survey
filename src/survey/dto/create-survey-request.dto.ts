@@ -1,3 +1,5 @@
+import { Question } from '@/schema/question.schema';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -5,7 +7,9 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
+import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
 
 export class CreateSurveyRequestDto {
   @IsString()
@@ -21,14 +25,9 @@ export class CreateSurveyRequestDto {
   date: Date;
 
   @IsArray()
-  questions: {
-    title: string;
-    type: string;
-    selection: {
-      type: number;
-      content: string;
-    }[];
-  }[];
+  @ValidateNested({ each: true })
+  @Type(() => CreateQuestionRequestDto)
+  questions: Question[];
 
   @IsString()
   @IsOptional()
@@ -42,14 +41,7 @@ export class CreateSurveyRequestDto {
     title: string,
     author: number,
     date: Date,
-    questions: {
-      title: string;
-      type: string;
-      selection: {
-        type: number;
-        content: string;
-      }[];
-    }[],
+    questions: Question[],
     description?: string,
     statistics?: (number | string)[][],
   ) {

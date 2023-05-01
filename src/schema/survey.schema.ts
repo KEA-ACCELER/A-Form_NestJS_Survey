@@ -1,3 +1,4 @@
+import { Question } from '@/schema/question.schema';
 import { Status } from '@/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
@@ -19,42 +20,11 @@ export class Survey {
   @Prop({ type: Date, required: true })
   date: Date;
 
-  //TODO: fix
   @Prop({
-    type: [
-      {
-        questions: [
-          {
-            title: {
-              type: String,
-            },
-            type: {
-              type: String,
-            },
-            selection: [
-              {
-                type: {
-                  type: String,
-                },
-                content: {
-                  type: String,
-                },
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    type: Types.Array,
     required: true,
   })
-  questions: {
-    title: string;
-    type: string;
-    selection: {
-      type: number;
-      content: string;
-    }[];
-  }[];
+  questions: Question[];
 
   @Prop({
     type: Date,
@@ -86,14 +56,7 @@ export class Survey {
     title: string,
     author: number,
     date: Date,
-    questions: {
-      title: string;
-      type: string;
-      selection: {
-        type: number;
-        content: string;
-      }[];
-    }[],
+    questions: Question[],
     createdAt: Date,
     updatedAt: Date,
     status: Status,
