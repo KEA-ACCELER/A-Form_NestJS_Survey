@@ -1,6 +1,6 @@
 import { Status } from '@/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
@@ -8,6 +8,8 @@ export type SurveyDocument = HydratedDocument<Survey>;
   timestamps: true,
 })
 export class Survey {
+  _id: Types.ObjectId;
+
   @Prop({ type: String, required: true })
   title: string;
 
@@ -17,6 +19,7 @@ export class Survey {
   @Prop({ type: Date, required: true })
   date: Date;
 
+  //TODO: fix
   @Prop({
     type: [
       {
@@ -79,6 +82,7 @@ export class Survey {
   statistics?: (number | string)[][];
 
   constructor(
+    _id: Types.ObjectId,
     title: string,
     author: number,
     date: Date,
@@ -96,6 +100,7 @@ export class Survey {
     description?: string,
     statistics?: (number | string)[][],
   ) {
+    this._id = _id;
     this.title = title;
     this.author = author;
     this.date = date;

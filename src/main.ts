@@ -8,14 +8,19 @@ declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
-
-  const configService = app.get(ConfigService);
-  await app.listen(configService.get('PORT') || 3000);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
+
+  const configService = app.get(ConfigService);
+  await app.listen(configService.get('PORT') || 3000);
 }
 bootstrap();
