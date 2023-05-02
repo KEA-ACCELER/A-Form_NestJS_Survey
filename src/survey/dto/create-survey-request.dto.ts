@@ -2,7 +2,7 @@ import { Question } from '@/schema/question.schema';
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -30,7 +30,7 @@ export class CreateSurveyRequestDto {
   @ApiProperty({
     type: Date,
   })
-  @IsDateString()
+  @IsDate()
   @IsNotEmpty()
   date: Date;
 

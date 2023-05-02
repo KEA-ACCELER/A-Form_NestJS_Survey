@@ -1,3 +1,4 @@
+import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { Types } from 'mongoose';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { SurveyService } from '@/survey/service/survey.service';
@@ -9,6 +10,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
@@ -19,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Survey } from '@/schema/survey.schema';
+import { PageDto } from '@/common/dto/page.dto';
 
 @ApiTags('survey')
 @Controller('survey')
@@ -33,6 +36,14 @@ export class SurveyController {
     @Body() createSurveyRequestDto: CreateSurveyRequestDto,
   ): Promise<string> {
     return await this.surveyService.create(createSurveyRequestDto);
+  }
+
+  @Get()
+  @ApiOkResponse()
+  async findAll(
+    @Query() baseQueryDto: BaseQueryDto,
+  ): Promise<PageDto<Survey[]>> {
+    return await this.surveyService.findAll(baseQueryDto);
   }
 
   @Get(':_id')

@@ -1,3 +1,5 @@
+import { PageDto } from '@/common/dto/page.dto';
+import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
 import { Status } from '@/common/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
@@ -13,6 +15,24 @@ export class SurveyService {
   async create(createSurveyDto: CreateSurveyRequestDto): Promise<string> {
     const createdSurvey = new this.surveyModel(createSurveyDto);
     return (await createdSurvey.save())._id.toString();
+  }
+
+  async findAll(baseQueryDto: BaseQueryDto): Promise<PageDto<Survey[]>> {
+    const { page, offset } = baseQueryDto;
+    return new PageDto(
+      page,
+      offset,
+      await this.surveyModel
+        .find({
+          status: Status.NORMAL,
+        })
+        .count(),
+      await this.surveyModel
+        .find()
+        .skip(page * offset)
+        .limit(offset)
+        .sort('-createdAt'),
+    );
   }
 
   async findOne(_id: Types.ObjectId): Promise<Survey> {
