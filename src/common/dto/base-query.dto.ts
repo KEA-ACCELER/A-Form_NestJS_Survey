@@ -4,7 +4,7 @@ import { IsNumber, IsOptional } from 'class-validator';
 export class BaseQueryDto {
   @ApiProperty({
     required: false,
-    default: 0,
+    default: 1,
   })
   @IsNumber()
   @IsOptional()
@@ -19,7 +19,7 @@ export class BaseQueryDto {
   offset: number;
 
   constructor(page?: number, offset?: number) {
-    this.page = page || 0;
+    this.page = page || 1;
     this.offset = offset || 10;
   }
 }

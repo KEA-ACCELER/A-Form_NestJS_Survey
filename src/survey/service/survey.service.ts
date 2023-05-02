@@ -28,8 +28,10 @@ export class SurveyService {
         })
         .count(),
       await this.surveyModel
-        .find()
-        .skip(page * offset)
+        .find({
+          status: Status.NORMAL,
+        })
+        .skip((page - 1) * offset)
         .limit(offset)
         .sort('-createdAt'),
     );
