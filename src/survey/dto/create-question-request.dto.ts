@@ -8,17 +8,21 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateQuestionRequestDto {
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @ApiProperty({ enum: QuestionType })
   @IsString()
   @IsNotEmpty()
   @IsEnum(QuestionType)
   type: QuestionType;
 
+  @ApiProperty({ isArray: true, type: CreateSelectionRequestDto })
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({ each: true })

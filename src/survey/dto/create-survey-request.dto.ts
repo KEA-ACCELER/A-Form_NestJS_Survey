@@ -10,32 +10,45 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSurveyRequestDto {
+  @ApiProperty({
+    type: String,
+  })
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @ApiProperty({
+    type: Number,
+  })
   @IsNumber()
   @IsNotEmpty()
   author: number;
 
+  @ApiProperty({
+    type: Date,
+  })
   @IsDateString()
   @IsNotEmpty()
   date: Date;
 
+  @ApiProperty({
+    isArray: true,
+    type: CreateQuestionRequestDto,
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQuestionRequestDto)
   questions: Question[];
 
+  @ApiProperty({
+    type: String,
+  })
   @IsString()
   @IsOptional()
   description?: string;
-
-  @IsArray()
-  @IsOptional()
-  statistics?: (number | string)[][];
 
   constructor(
     title: string,
@@ -43,13 +56,11 @@ export class CreateSurveyRequestDto {
     date: Date,
     questions: Question[],
     description?: string,
-    statistics?: (number | string)[][],
   ) {
     this.title = title;
     this.author = author;
     this.date = date;
     this.questions = questions;
     this.description = description;
-    this.statistics = statistics;
   }
 }

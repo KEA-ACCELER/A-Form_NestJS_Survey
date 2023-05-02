@@ -10,11 +10,9 @@ import { Model, Types } from 'mongoose';
 export class SurveyService {
   constructor(@InjectModel(Survey.name) private surveyModel: Model<Survey>) {}
 
-  async create(
-    createSurveyDto: CreateSurveyRequestDto,
-  ): Promise<Types.ObjectId> {
+  async create(createSurveyDto: CreateSurveyRequestDto): Promise<string> {
     const createdSurvey = new this.surveyModel(createSurveyDto);
-    return (await createdSurvey.save())._id;
+    return (await createdSurvey.save())._id.toString();
   }
 
   async findOne(_id: Types.ObjectId): Promise<Survey> {
@@ -27,7 +25,10 @@ export class SurveyService {
     return survey;
   }
 
-  async update(_id: Types.ObjectId, updateSurveyDto: UpdateSurveyRequestDto) {
+  async update(
+    _id: Types.ObjectId,
+    updateSurveyDto: UpdateSurveyRequestDto,
+  ): Promise<string> {
     await this.surveyModel.updateOne(
       {
         _id,
@@ -35,5 +36,7 @@ export class SurveyService {
       },
       { $set: updateSurveyDto },
     );
+
+    return _id.toString();
   }
 }

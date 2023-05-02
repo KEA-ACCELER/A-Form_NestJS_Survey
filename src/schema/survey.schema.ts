@@ -2,6 +2,7 @@ import { Question } from '@/schema/question.schema';
 import { Status } from '@/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
@@ -9,33 +10,58 @@ export type SurveyDocument = HydratedDocument<Survey>;
   timestamps: true,
 })
 export class Survey {
-  _id: Types.ObjectId;
+  @ApiProperty({
+    type: String,
+  })
+  _id: string;
 
+  @ApiProperty({
+    type: String,
+  })
   @Prop({ type: String, required: true })
   title: string;
 
+  @ApiProperty({
+    type: Number,
+  })
   @Prop({ type: Number, required: true })
   author: number;
 
+  @ApiProperty({
+    type: Date,
+  })
   @Prop({ type: Date, required: true })
   date: Date;
 
+  @ApiProperty({
+    isArray: true,
+    type: Question,
+  })
   @Prop({
     type: Types.Array,
     required: true,
   })
   questions: Question[];
 
+  @ApiProperty({
+    type: Date,
+  })
   @Prop({
     type: Date,
   })
   createdAt: Date;
 
+  @ApiProperty({
+    type: Date,
+  })
   @Prop({
     type: Date,
   })
   updatedAt: Date;
 
+  @ApiProperty({
+    enum: Status,
+  })
   @Prop({
     type: String,
     enum: Status,
@@ -43,16 +69,22 @@ export class Survey {
   })
   status: Status;
 
+  @ApiProperty({
+    type: String,
+  })
   @Prop({ type: String })
   description?: string;
 
+  @ApiProperty({
+    isArray: true,
+  })
   @Prop({
     type: [[Number, String]],
   })
   statistics?: (number | string)[][];
 
   constructor(
-    _id: Types.ObjectId,
+    _id: string,
     title: string,
     author: number,
     date: Date,
