@@ -29,6 +29,7 @@ export class SurveyService {
     _id: Types.ObjectId,
     updateSurveyDto: UpdateSurveyRequestDto,
   ): Promise<string> {
+    await this.findOne(_id);
     await this.surveyModel.updateOne(
       {
         _id,
@@ -38,5 +39,19 @@ export class SurveyService {
     );
 
     return _id.toString();
+  }
+
+  async delete(_id: Types.ObjectId): Promise<void> {
+    await this.findOne(_id);
+    await this.surveyModel.updateOne(
+      {
+        _id,
+      },
+      {
+        $set: {
+          status: Status.DELETED,
+        },
+      },
+    );
   }
 }
