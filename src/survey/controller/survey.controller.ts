@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { Survey } from '@/schema/survey.schema';
 import { PageDto } from '@/common/dto/page.dto';
+import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 
 @ApiTags('survey')
 @Controller('survey')
@@ -39,7 +40,7 @@ export class SurveyController {
   }
 
   @Get()
-  @ApiOkResponse()
+  @PaginationResponse(Survey)
   async findAll(
     @Query() baseQueryDto: BaseQueryDto,
   ): Promise<PageDto<Survey[]>> {

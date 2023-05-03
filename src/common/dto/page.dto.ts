@@ -16,9 +16,7 @@ export class PageDto<T> {
   })
   total: number;
 
-  @ApiProperty({
-    isArray: true,
-  })
+  @ApiProperty()
   data: T;
 
   constructor(page: number, offset: number, total: number, data: T) {
