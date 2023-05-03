@@ -32,7 +32,7 @@ export class CreateSurveyRequestDto {
   })
   @IsDate()
   @IsNotEmpty()
-  date: Date;
+  deadline: Date;
 
   @ApiProperty({
     isArray: true,
@@ -53,13 +53,13 @@ export class CreateSurveyRequestDto {
   constructor(
     title: string,
     author: number,
-    date: Date,
+    deadline: Date,
     questions: Question[],
     description?: string,
   ) {
     this.title = title;
     this.author = author;
-    this.date = date;
+    this.deadline = deadline;
     this.questions = questions;
     this.description = description;
   }

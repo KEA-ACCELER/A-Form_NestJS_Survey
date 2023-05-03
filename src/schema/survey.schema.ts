@@ -31,7 +31,7 @@ export class Survey {
     type: Date,
   })
   @Prop({ type: Date, required: true })
-  date: Date;
+  deadline: Date;
 
   @ApiProperty({
     isArray: true,
@@ -87,7 +87,7 @@ export class Survey {
     _id: string,
     title: string,
     author: number,
-    date: Date,
+    deadline: Date,
     questions: Question[],
     createdAt: Date,
     updatedAt: Date,
@@ -98,7 +98,7 @@ export class Survey {
     this._id = _id;
     this.title = title;
     this.author = author;
-    this.date = date;
+    this.deadline = deadline;
     this.questions = questions;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
