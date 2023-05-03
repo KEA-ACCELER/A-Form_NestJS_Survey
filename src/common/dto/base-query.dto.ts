@@ -3,7 +3,7 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 export class BaseQueryDto {
   @ApiProperty({
-    required: false,
+    required: true,
     default: 1,
   })
   @IsNumber()
@@ -11,7 +11,7 @@ export class BaseQueryDto {
   page: number;
 
   @ApiProperty({
-    required: false,
+    required: true,
     default: 10,
   })
   @IsNumber()

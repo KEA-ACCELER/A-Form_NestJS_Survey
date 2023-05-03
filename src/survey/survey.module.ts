@@ -1,3 +1,4 @@
+import { QueryHelper } from './helper/query.helper';
 import { Survey, SurveySchema } from '@/schema/survey.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { SurveyController } from '@/survey/controller/survey.controller';
   imports: [
     MongooseModule.forFeature([{ name: Survey.name, schema: SurveySchema }]),
   ],
-  providers: [SurveyService],
+  providers: [SurveyService, QueryHelper],
   controllers: [SurveyController],
 })
 export class SurveyModule {}

@@ -1,4 +1,4 @@
-import { BaseQueryDto } from '@/common/dto/base-query.dto';
+import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { Types } from 'mongoose';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { SurveyService } from '@/survey/service/survey.service';
@@ -41,10 +41,8 @@ export class SurveyController {
 
   @Get()
   @PaginationResponse(Survey)
-  async findAll(
-    @Query() baseQueryDto: BaseQueryDto,
-  ): Promise<PageDto<Survey[]>> {
-    return await this.surveyService.findAll(baseQueryDto);
+  async findAll(@Query() query: FindSurveyDto): Promise<PageDto<Survey[]>> {
+    return await this.surveyService.findAll(query);
   }
 
   @Get(':_id')

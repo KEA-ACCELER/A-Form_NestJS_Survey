@@ -1,40 +1,63 @@
+import { QueryHelper } from '@/survey/helper/query.helper';
 import { PageDto } from '@/common/dto/page.dto';
-import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
-import { Status } from '@/common/enum';
+import { Status, SuveyProgressStatus } from '@/common/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
+import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 
 @Injectable()
 export class SurveyService {
-  constructor(@InjectModel(Survey.name) private surveyModel: Model<Survey>) {}
+  constructor(
+    @InjectModel(Survey.name) private surveyModel: Model<Survey>,
+    private queryHelper: QueryHelper,
+  ) {}
 
   async create(createSurveyDto: CreateSurveyRequestDto): Promise<string> {
     const createdSurvey = new this.surveyModel(createSurveyDto);
     return (await createdSurvey.save())._id.toString();
   }
 
-  async findAll(baseQueryDto: BaseQueryDto): Promise<PageDto<Survey[]>> {
-    const { page, offset } = baseQueryDto;
-    return new PageDto(
-      page,
-      offset,
-      await this.surveyModel
-        .find({
-          status: Status.NORMAL,
-        })
-        .count(),
-      await this.surveyModel
-        .find({
-          status: Status.NORMAL,
-        })
-        .skip((page - 1) * offset)
-        .limit(offset)
-        .sort('-createdAt'),
-    );
+  async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
+    const { page, offset } = query;
+
+    // TODO: add view
+    const sortQuery: { [key: string]: SortOrder } = query?.sort
+      ? this.queryHelper.getSortQuery(query.sort)
+      : { createdAt: -1 };
+
+    const keywordQuery = query?.content
+      ? this.queryHelper.getKeywordQuery(query.content)
+      : null;
+
+    const progressQuery =
+      query.progressStatus !== SuveyProgressStatus.ALL
+        ? this.queryHelper.getProgressQuery(query.progressStatus)
+        : null;
+
+    const findQuery: FilterQuery<Survey> = {
+      status: Status.NORMAL,
+    };
+
+    if (keywordQuery || progressQuery) {
+      findQuery.$or = [
+        ...(keywordQuery ? keywordQuery : []),
+        ...(progressQuery ? progressQuery : []),
+      ];
+    }
+
+    const total = await this.surveyModel.find(findQuery).count();
+
+    const data = await this.surveyModel
+      .find(findQuery)
+      .skip((page - 1) * offset)
+      .limit(offset)
+      .sort(sortQuery);
+
+    return new PageDto(page, offset, total, data);
   }
 
   async findOne(_id: Types.ObjectId): Promise<Survey> {
