@@ -24,8 +24,8 @@ import { Survey } from '@/schema/survey.schema';
 import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 
-@ApiTags('survey')
-@Controller('survey')
+@ApiTags('surveys')
+@Controller('surveys')
 export class SurveyController {
   constructor(private surveyService: SurveyService) {}
 
