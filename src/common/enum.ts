@@ -3,6 +3,11 @@ export enum Status {
   DELETED = 'DELETED',
 }
 
+export enum SurveyType {
+  NORMAL = 'NORMAL',
+  AB = 'AB',
+}
+
 export enum QuestionType {
   RADIO = 'RADIO',
   CHECKBOX = 'CHECKBOX',

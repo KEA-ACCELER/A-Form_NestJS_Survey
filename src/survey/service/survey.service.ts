@@ -17,7 +17,15 @@ export class SurveyService {
   ) {}
 
   async create(createSurveyDto: CreateSurveyRequestDto): Promise<string> {
-    const createdSurvey = new this.surveyModel(createSurveyDto);
+    console.log(createSurveyDto);
+    await this.surveyModel.create(createSurveyDto);
+    const createdSurvey = new this.surveyModel({
+      title: createSurveyDto.title,
+      type: createSurveyDto.type,
+      questions: [[]],
+      deadline: createSurveyDto.deadline,
+      author: createSurveyDto.author,
+    });
     return (await createdSurvey.save())._id.toString();
   }
 

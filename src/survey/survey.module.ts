@@ -1,4 +1,4 @@
-import { QueryHelper } from './helper/query.helper';
+import { QueryHelper } from '@/survey/helper/query.helper';
 import { Survey, SurveySchema } from '@/schema/survey.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
