@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SurveyModule } from '@/survey/survey.module';
+import { FileModule } from '@/file/file.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SurveyModule } from '@/survey/survey.module';
       }),
     }),
     SurveyModule,
+    FileModule,
   ],
 })
 export class AppModule {}
