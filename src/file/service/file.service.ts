@@ -1,6 +1,6 @@
 import { S3Helper } from '@/file/helper/s3.helper';
 import { Injectable } from '@nestjs/common';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { File } from '@/schema/file.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,10 +12,8 @@ export class FileService {
     @InjectModel(File.name) private fileModel: Model<File>,
   ) {}
 
-  async uploadFiles(
-    files: Array<Express.Multer.File>,
-  ): Promise<Types.ObjectId[]> {
-    const result: Types.ObjectId[] = [];
+  async uploadFiles(files: Array<Express.Multer.File>): Promise<string[]> {
+    const result: string[] = [];
 
     files && files.length
       ? await Promise.all(
@@ -29,7 +27,7 @@ export class FileService {
                   originName: file.originalname,
                   s3Link: uploadData.Location,
                 })
-              )._id,
+              ).s3Link,
             );
           }),
         )
