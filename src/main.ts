@@ -33,6 +33,8 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
 
+  app.enableCors();
+
   const configService = app.get(ConfigService);
   await app.listen(configService.get('PORT') || 3000);
 }
