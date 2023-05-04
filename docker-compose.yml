@@ -8,8 +8,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: rootpw
     ports:
       - 27017:27017
-    volumes:
-      - mongodb_data_container:/data/db
+    # TODO: volumes 추가 시 에러 -> 확인 필요
+    # init 추가 필요
+    #volumes:
+    # - mongodb_data_container:/data/db
+    #- ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
 
   api:
     build: .
@@ -21,6 +24,5 @@ services:
       - 3010:3010
     depends_on:
       - mongodb
-
-volumes:
-  mongodb_data_container:
+# volumes:
+#   mongodb_data_container:
