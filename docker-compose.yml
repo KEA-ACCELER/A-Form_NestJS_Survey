@@ -21,7 +21,14 @@ services:
       - /usr/src/app/node_modules
       - /usr/src/app/dist
     ports:
-      - 3010:3010
+      - 3010:3000
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      USER_HOSTNAME: ${USER_HOSTNAME}
     depends_on:
       - mongodb
 # volumes:
