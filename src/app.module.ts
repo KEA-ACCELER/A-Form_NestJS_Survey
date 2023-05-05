@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '@/app.controller';
-import { AppService } from '@/app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SurveyModule } from '@/survey/survey.module';
+import { FileModule } from '@/file/file.module';
 
 @Module({
   imports: [
@@ -15,8 +15,8 @@ import { MongooseModule } from '@nestjs/mongoose';
         uri: `${process.env.DATABASE_URL}`,
       }),
     }),
+    SurveyModule,
+    FileModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
