@@ -76,7 +76,7 @@ export class SurveyService {
       _id,
       status: Status.NORMAL,
     });
-    if (!survey) throw new NotFoundException('not found');
+    if (!survey) throw new NotFoundException('survey not found');
 
     return survey;
   }
