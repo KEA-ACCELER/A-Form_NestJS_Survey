@@ -20,11 +20,12 @@ export class Question {
   @ApiProperty({
     isArray: true,
     type: Selection,
+    required: false,
   })
   @Prop({ type: Types.Array })
-  selection: Selection[];
+  selection?: Selection[];
 
-  constructor(title: string, type: QuestionType, selection: Selection[]) {
+  constructor(title: string, type: QuestionType, selection?: Selection[]) {
     this.title = title;
     this.type = type;
     this.selection = selection;

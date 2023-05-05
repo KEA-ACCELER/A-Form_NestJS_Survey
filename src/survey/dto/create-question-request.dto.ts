@@ -4,6 +4,7 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -24,12 +25,12 @@ export class CreateQuestionRequestDto {
 
   @ApiProperty({ isArray: true, type: CreateSelectionRequestDto })
   @IsArray()
-  @IsNotEmpty()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreateSelectionRequestDto)
-  selections: Selection[];
+  selections?: Selection[];
 
-  constructor(title: string, type: QuestionType, selections: Selection[]) {
+  constructor(title: string, type: QuestionType, selections?: Selection[]) {
     this.title = title;
     this.type = type;
     this.selections = selections;
