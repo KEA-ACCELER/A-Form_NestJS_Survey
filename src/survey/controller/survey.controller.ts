@@ -11,10 +11,12 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -23,6 +25,7 @@ import {
 import { Survey } from '@/schema/survey.schema';
 import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
+import { AuthGuard } from '@/common/guard/auth.guard';
 
 @ApiTags('surveys')
 @Controller('surveys')
@@ -30,6 +33,8 @@ export class SurveyController {
   constructor(private surveyService: SurveyService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     type: String,
   })
@@ -60,6 +65,8 @@ export class SurveyController {
   }
 
   @Patch(':_id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiParam({
     name: '_id',
     type: String,
@@ -75,6 +82,8 @@ export class SurveyController {
   }
 
   @Delete(':_id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiParam({
     name: '_id',
     type: String,

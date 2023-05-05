@@ -30,3 +30,7 @@ export enum SurveySort {
   ASC = 'asc', // 오름차순
   DESC = 'desc', // 내림차순
 }
+
+export enum UserEndpoint {
+  GET_USER_INFO_URI = 'app/user/info',
+}
