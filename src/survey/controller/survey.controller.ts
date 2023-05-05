@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -37,6 +38,7 @@ export class SurveyController {
   @Post()
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: '설문 생성 API' })
   @ApiCreatedResponse({
     type: String,
   })
@@ -48,6 +50,7 @@ export class SurveyController {
   }
 
   @Get()
+  @ApiOperation({ summary: '설문 전체 조회 API' })
   @PaginationResponse(Survey)
   async findAll(@Query() query: FindSurveyDto): Promise<PageDto<Survey[]>> {
     return await this.surveyService.findAll(query);
@@ -58,6 +61,7 @@ export class SurveyController {
     name: '_id',
     type: String,
   })
+  @ApiOperation({ summary: '설문 상세 조회 API' })
   @ApiOkResponse({
     type: Survey,
   })
@@ -74,6 +78,7 @@ export class SurveyController {
     name: '_id',
     type: String,
   })
+  @ApiOperation({ summary: '설문 수정 API' })
   @ApiOkResponse({
     type: String,
   })
@@ -96,6 +101,7 @@ export class SurveyController {
     name: '_id',
     type: String,
   })
+  @ApiOperation({ summary: '설문 삭제 API' })
   @ApiOkResponse()
   async delete(
     @User() user: UserResponseDto,

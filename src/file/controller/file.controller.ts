@@ -10,6 +10,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -34,6 +35,7 @@ export class FileController {
       },
     },
   })
+  @ApiOperation({ summary: '파일 업로드 API' })
   @ApiCreatedResponse({
     type: [String],
   })
