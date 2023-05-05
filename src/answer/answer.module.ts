@@ -1,4 +1,3 @@
-import { ValidateAnswerPipe } from '@/answer/pipe/validate-answer.pipe';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AnswerController } from '@/answer/controller/answer.controller';
