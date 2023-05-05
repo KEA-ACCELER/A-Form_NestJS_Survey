@@ -22,11 +22,12 @@ export class Survey {
   @Prop({ type: String, required: true })
   title: string;
 
+  // User API에서 받은 userId
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  @Prop({ type: Number, required: true })
-  author: number;
+  @Prop({ type: String, required: true })
+  author: string;
 
   @ApiProperty({
     type: Date,
@@ -96,7 +97,7 @@ export class Survey {
   constructor(
     _id: string,
     title: string,
-    author: number,
+    author: string,
     deadline: Date,
     questions: Question[] | ABQuestion[],
     createdAt: Date,

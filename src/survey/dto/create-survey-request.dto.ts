@@ -3,7 +3,6 @@ import {
   IsArray,
   IsDate,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -27,13 +26,6 @@ export class CreateSurveyRequestDto {
   @IsString()
   @IsNotEmpty()
   title: string;
-
-  @ApiProperty({
-    type: Number,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  author: number;
 
   @ApiProperty({
     type: Date,
@@ -74,14 +66,12 @@ export class CreateSurveyRequestDto {
   constructor(
     type: SurveyType,
     title: string,
-    author: number,
     deadline: Date,
     questions: any,
     description?: string,
   ) {
     this.type = type;
     this.title = title;
-    this.author = author;
     this.deadline = deadline;
     this.questions = questions;
     this.description = description;

@@ -4,7 +4,11 @@ import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
 import { Status, SuveyProgressStatus } from '@/common/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
@@ -16,8 +20,16 @@ export class SurveyService {
     private queryHelper: QueryHelper,
   ) {}
 
-  async create(createSurveyDto: CreateSurveyRequestDto): Promise<string> {
-    return (await this.surveyModel.create(createSurveyDto))._id.toString();
+  async create(
+    author: string,
+    createSurveyDto: CreateSurveyRequestDto,
+  ): Promise<string> {
+    return (
+      await this.surveyModel.create({
+        author,
+        ...createSurveyDto,
+      })
+    )._id.toString();
   }
 
   async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
@@ -71,9 +83,11 @@ export class SurveyService {
 
   async update(
     _id: Types.ObjectId,
+    author: string,
     updateSurveyDto: UpdateSurveyRequestDto,
   ): Promise<string> {
     await this.findOne(_id);
+    await this.checkAuthority(_id, author);
     await this.surveyModel.updateOne(
       {
         _id,
@@ -85,8 +99,9 @@ export class SurveyService {
     return _id.toString();
   }
 
-  async delete(_id: Types.ObjectId): Promise<void> {
+  async delete(_id: Types.ObjectId, author: string): Promise<void> {
     await this.findOne(_id);
+    await this.checkAuthority(_id, author);
     await this.surveyModel.updateOne(
       {
         _id,
@@ -97,5 +112,16 @@ export class SurveyService {
         },
       },
     );
+  }
+
+  async checkAuthority(_id: Types.ObjectId, author: string): Promise<void> {
+    if (
+      !(await this.surveyModel.findOne({
+        author,
+        _id,
+      }))
+    ) {
+      throw new UnauthorizedException();
+    }
   }
 }

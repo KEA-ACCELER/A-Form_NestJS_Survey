@@ -1,3 +1,4 @@
+import { UserResponseDto } from '@/common/dto/user-response.dto';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { Types } from 'mongoose';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
@@ -26,6 +27,7 @@ import { Survey } from '@/schema/survey.schema';
 import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 import { AuthGuard } from '@/common/guard/auth.guard';
+import { User } from '@/common/decorator/user.decorator';
 
 @ApiTags('surveys')
 @Controller('surveys')
@@ -39,9 +41,10 @@ export class SurveyController {
     type: String,
   })
   async create(
+    @User() user: UserResponseDto,
     @Body() createSurveyRequestDto: CreateSurveyRequestDto,
   ): Promise<string> {
-    return await this.surveyService.create(createSurveyRequestDto);
+    return await this.surveyService.create(user.userId, createSurveyRequestDto);
   }
 
   @Get()
@@ -75,10 +78,15 @@ export class SurveyController {
     type: String,
   })
   async update(
+    @User() user: UserResponseDto,
     @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
     @Body() updateSurveyRequestDto: UpdateSurveyRequestDto,
   ): Promise<string> {
-    return await this.surveyService.update(_id, updateSurveyRequestDto);
+    return await this.surveyService.update(
+      _id,
+      user.userId,
+      updateSurveyRequestDto,
+    );
   }
 
   @Delete(':_id')
@@ -90,8 +98,9 @@ export class SurveyController {
   })
   @ApiOkResponse()
   async delete(
+    @User() user: UserResponseDto,
     @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
   ): Promise<void> {
-    return await this.surveyService.delete(_id);
+    return await this.surveyService.delete(_id, user.userId);
   }
 }
