@@ -12,9 +12,14 @@ import { AnswerModule } from '@/answer/answer.module';
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
     MongooseModule.forRootAsync({
-      useFactory: () => ({
-        uri: `${process.env.DATABASE_URL}`,
-      }),
+      useFactory: () => {
+        const credentials = `${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URL}`;
+        const uri =
+          process.env.NODE_ENV === 'local'
+            ? `mongodb+srv://${credentials}`
+            : `mongodb://${credentials}`;
+        return { uri };
+      },
     }),
     SurveyModule,
     FileModule,
