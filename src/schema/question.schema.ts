@@ -23,11 +23,11 @@ export class Question {
     required: false,
   })
   @Prop({ type: Types.Array })
-  selection?: Selection[];
+  selections?: Selection[];
 
-  constructor(title: string, type: QuestionType, selection?: Selection[]) {
+  constructor(title: string, type: QuestionType, selections?: Selection[]) {
     this.title = title;
     this.type = type;
-    this.selection = selection;
+    this.selections = selections;
   }
 }

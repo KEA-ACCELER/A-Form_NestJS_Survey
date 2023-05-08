@@ -1,3 +1,4 @@
+import { ValidateAnswerPipe } from '@/answer/pipe/validate-answer.pipe';
 import { AuthGuard } from '@/common/guard/auth.guard';
 import { AnswerService } from '@/answer/service/answer.service';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
@@ -19,14 +20,14 @@ export class AnswerController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  // @UsePipes(ValidateAnswerPipe)
   @ApiOperation({ summary: '설문 응답 API' })
   @ApiCreatedResponse({
     type: String,
   })
   create(
     @User() user: UserResponseDto,
-    @Body() requestDto: CreateAnswerRequestDto,
+    // ValidateAnswerPipe -> CreateAnswerRequestDto 순으로 실행
+    @Body(ValidateAnswerPipe) requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
     return this.answerService.create(user.userId, requestDto);
   }

@@ -1,6 +1,6 @@
 import { ABQuestion } from '@/schema/ab-question.schema';
 import { Question } from '@/schema/question.schema';
-import { Status } from '@/common/enum';
+import { Status, SurveyType } from '@/common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
@@ -15,6 +15,12 @@ export class Survey {
     type: String,
   })
   _id: string;
+
+  @ApiProperty({
+    enum: SurveyType,
+  })
+  @Prop({ enum: SurveyType, required: true })
+  type: SurveyType;
 
   @ApiProperty({
     type: String,
@@ -96,6 +102,7 @@ export class Survey {
 
   constructor(
     _id: string,
+    type: SurveyType,
     title: string,
     author: string,
     deadline: Date,
@@ -107,6 +114,7 @@ export class Survey {
     statistics?: (number | string)[][],
   ) {
     this._id = _id;
+    this.type = type;
     this.title = title;
     this.author = author;
     this.deadline = deadline;
