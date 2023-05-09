@@ -11,7 +11,6 @@ export class CreateAnswerRequestDto {
   @IsNotEmpty()
   @Transform(({ value }) => {
     try {
-      console.log('CreateAnswerRequestDto transform');
       return new Types.ObjectId(value);
     } catch (error) {
       throw new BadRequestException('Invalid ObjectId');

@@ -19,7 +19,7 @@ export class Survey {
   @ApiProperty({
     enum: SurveyType,
   })
-  @Prop({ enum: SurveyType, required: true })
+  @Prop({ type: String, enum: SurveyType, required: true })
   type: SurveyType;
 
   @ApiProperty({
