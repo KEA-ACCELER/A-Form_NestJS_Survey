@@ -38,3 +38,8 @@ export enum UserEndpoint {
 export enum RedisKey {
   ANSWER = 'answer',
 }
+
+export enum ABSurvey {
+  A = 'A',
+  B = 'B',
+}

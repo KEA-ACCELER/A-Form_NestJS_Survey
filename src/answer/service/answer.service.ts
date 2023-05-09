@@ -17,6 +17,7 @@ export class AnswerService {
     requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
     await this.cacheHelper.incrementTotalCount(requestDto.survey.toString());
+    await this.cacheHelper.updateAnswer(requestDto.survey, requestDto.answers);
 
     return (
       await this.answerModel.create({

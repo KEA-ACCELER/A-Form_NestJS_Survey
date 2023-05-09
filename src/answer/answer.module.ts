@@ -1,3 +1,4 @@
+import { SurveyCheckHelper } from './helper/survey-check.helper';
 import { CacheHelper } from '@/answer/helper/cache.helper';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -15,6 +16,6 @@ import { RedisHelper } from '@/common/helper/redis.helper';
     SurveyModule,
   ],
   controllers: [AnswerController],
-  providers: [AnswerService, RedisHelper, CacheHelper],
+  providers: [AnswerService, RedisHelper, CacheHelper, SurveyCheckHelper],
 })
 export class AnswerModule {}
