@@ -1,3 +1,4 @@
+import { CacheHelper } from './../helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { Answer } from '@/schema/answer.schema';
 import { Injectable } from '@nestjs/common';
@@ -6,12 +7,17 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class AnswerService {
-  constructor(@InjectModel(Answer.name) private answerModel: Model<Answer>) {}
+  constructor(
+    @InjectModel(Answer.name) private answerModel: Model<Answer>,
+    private cacheHelper: CacheHelper,
+  ) {}
 
   async create(
     author: string,
     requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
+    await this.cacheHelper.incrementTotalCount(requestDto.survey.toString());
+
     return (
       await this.answerModel.create({
         author,
