@@ -35,21 +35,21 @@ export class CacheHelper {
 
   async updateAnswer(
     _id: Types.ObjectId,
-    answers: (number | string)[][],
+    answers: (number | string)[][] | string,
   ): Promise<void> {
     const prevKey = `${RedisKey.ANSWER}:${_id}`;
 
     const surveyType = await this.surveyCheckHelper.getSurveyType(_id);
     if (surveyType === SurveyType.AB) {
-      const updateType = this.surveyCheckHelper.checkABUpdate(answers[0]);
-      await this.updateABAnswer(_id, prevKey, updateType);
+      await this.updateABAnswer(_id, prevKey, answers as string);
     } else if (surveyType === SurveyType.NORMAL) {
-      console.log('NORMAL');
-      for (const [idx, answer] of answers.entries()) {
-        // checkbox나 radio일 경우에만 통계 저장
-        if (answer.every((item) => typeof item === 'number')) {
-          for (const checked of answer as number[]) {
-            await this.updateNormalSurveyAnswer(_id, prevKey, checked, idx);
+      if (Array.isArray(answers)) {
+        for (const [idx, answer] of answers.entries()) {
+          // checkbox나 radio일 경우에만 통계 저장
+          if (answer.every((item: any) => typeof item === 'number')) {
+            for (const checked of answer as number[]) {
+              await this.updateNormalSurveyAnswer(_id, prevKey, checked, idx);
+            }
           }
         }
       }

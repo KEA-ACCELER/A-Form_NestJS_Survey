@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsArray, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { BadRequestException } from '@nestjs/common';
 
 export class CreateAnswerRequestDto {
@@ -21,11 +21,10 @@ export class CreateAnswerRequestDto {
   @ApiProperty({
     isArray: true,
   })
-  @IsArray()
   @IsNotEmpty()
-  answers: [string | number][];
+  answers: [string | number][] | string;
 
-  constructor(survey: Types.ObjectId, answer: [string | number][]) {
+  constructor(survey: Types.ObjectId, answer: [string | number][] | string) {
     this.survey = survey;
     this.answers = answer;
   }

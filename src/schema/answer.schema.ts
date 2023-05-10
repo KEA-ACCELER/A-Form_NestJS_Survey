@@ -51,7 +51,7 @@ export class Answer {
   @Prop({
     type: [[String, Number]],
   })
-  answers: [string | number][];
+  answers: [string | number][] | string;
 
   constructor(
     _id: Types.ObjectId,
@@ -59,7 +59,7 @@ export class Answer {
     author: string,
     createdAt: Date,
     updatedAt: Date,
-    answers: [string | number][],
+    answers: [string | number][] | string,
   ) {
     this._id = _id;
     this.survey = survey;
