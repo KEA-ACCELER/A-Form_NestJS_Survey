@@ -29,7 +29,7 @@ import * as redisStore from 'cache-manager-ioredis';
       useFactory: () => {
         return {
           store: redisStore,
-          host: 'localhost',
+          host: process.env.REDIS_HOST,
           port: 6379,
           ttl: 60 * 60 * 24, // 24시간 후 만료
         };

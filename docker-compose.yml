@@ -8,11 +8,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - 27017:27017
-    # TODO: volumes 추가 시 에러 -> 확인 필요
-    # init 추가 필요
-    #volumes:
-    # - mongodb_data_container:/data/db
-    #- ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    # TODO: init 작동 여부 확인
+    volumes:
+      - mongodb_data_container:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
 
   api:
     build: .
@@ -31,7 +30,15 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       S3_BUCKET: ${S3_BUCKET}
       USER_HOSTNAME: ${USER_HOSTNAME}
+      REDIS_HOST: ${REDIS_HOST}
     depends_on:
       - mongodb
-# volumes:
-#   mongodb_data_container:
+      - redis
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+volumes:
+  mongodb_data_container:
