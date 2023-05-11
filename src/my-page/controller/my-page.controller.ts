@@ -17,10 +17,10 @@ import {
 import { Types } from 'mongoose';
 
 @ApiTags('my-page')
-@Controller('my-page')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
-export class UserController {
+@Controller('my-page')
+export class MyPageController {
   constructor(
     private answerService: AnswerService,
     private surveyService: SurveyService,
