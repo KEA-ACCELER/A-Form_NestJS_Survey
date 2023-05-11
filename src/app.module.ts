@@ -5,6 +5,7 @@ import { SurveyModule } from '@/survey/survey.module';
 import { FileModule } from '@/file/file.module';
 import { AnswerModule } from '@/answer/answer.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { UserModule } from '@/user/user.module';
 import * as redisStore from 'cache-manager-ioredis';
 
 @Module({
@@ -38,6 +39,7 @@ import * as redisStore from 'cache-manager-ioredis';
     SurveyModule,
     FileModule,
     AnswerModule,
+    UserModule,
   ],
 })
 export class AppModule {}

@@ -17,5 +17,6 @@ import { RedisHelper } from '@/common/helper/redis.helper';
   ],
   controllers: [AnswerController],
   providers: [AnswerService, RedisHelper, CacheHelper, SurveyCheckHelper],
+  exports: [AnswerService],
 })
 export class AnswerModule {}
