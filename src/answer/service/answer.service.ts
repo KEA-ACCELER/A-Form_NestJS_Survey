@@ -41,7 +41,7 @@ export class AnswerService {
     )._id.toString();
   }
 
-  async findUserAnswerBySurvey(
+  async findMyAnswerBySurvey(
     author: string,
     survey: Types.ObjectId,
   ): Promise<Answer> {

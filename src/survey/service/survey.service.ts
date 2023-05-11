@@ -124,4 +124,11 @@ export class SurveyService {
       throw new UnauthorizedException();
     }
   }
+
+  async findMySurveys(author: string): Promise<Survey[]> {
+    return await this.surveyModel.find({
+      author,
+      status: Status.NORMAL,
+    });
+  }
 }
