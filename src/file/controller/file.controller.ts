@@ -15,7 +15,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('files')
-@Controller('files')
+@Controller('/surveys/files')
 export class FileController {
   constructor(private fileService: FileService) {}
 

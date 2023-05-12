@@ -19,7 +19,7 @@ import { Types } from 'mongoose';
 @ApiTags('my-page')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
-@Controller('my-page')
+@Controller('surveys/my-page')
 export class MyPageController {
   constructor(
     private answerService: AnswerService,
