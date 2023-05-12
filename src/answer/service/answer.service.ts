@@ -1,4 +1,4 @@
-import { CacheHelper } from '@/answer/helper/cache.helper';
+// import { CacheHelper } from '@/answer/helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { Answer } from '@/schema/answer.schema';
 import { Injectable, BadRequestException } from '@nestjs/common';
@@ -7,10 +7,7 @@ import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class AnswerService {
-  constructor(
-    @InjectModel(Answer.name) private answerModel: Model<Answer>,
-    private cacheHelper: CacheHelper,
-  ) {}
+  constructor(@InjectModel(Answer.name) private answerModel: Model<Answer>) {}
 
   async checkUserAnswer(
     author: string,
@@ -31,8 +28,9 @@ export class AnswerService {
       throw new BadRequestException('Already answered');
     }
 
-    await this.cacheHelper.incrementTotalCount(survey.toString());
-    await this.cacheHelper.updateAnswer(survey, requestDto.answers);
+    // TODO: redis 로직 확인
+    // await this.cacheHelper.incrementTotalCount(survey.toString());
+    // await this.cacheHelper.updateAnswer(survey, requestDto.answers);
 
     return (
       await this.answerModel.create({
