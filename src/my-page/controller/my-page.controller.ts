@@ -26,9 +26,9 @@ export class MyPageController {
     private surveyService: SurveyService,
   ) {}
 
-  @Get('surveys/:surveyId/answers')
+  @Get('surveys/:_id/answers')
   @ApiParam({
-    name: 'surveyId',
+    name: '_id',
     type: String,
   })
   @ApiOperation({ summary: '특정 설문에 내가 응답한 내역 조회 API' })
@@ -37,7 +37,7 @@ export class MyPageController {
   })
   findMyAnswerBySurvey(
     @User() user: UserResponseDto,
-    @Param('surveyId', ParseObjectIdPipe) survey: Types.ObjectId,
+    @Param('_id', ParseObjectIdPipe) survey: Types.ObjectId,
   ): Promise<Answer> {
     return this.answerService.findMyAnswerBySurvey(user.userId, survey);
   }
