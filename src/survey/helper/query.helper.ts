@@ -1,5 +1,5 @@
 import { SortOrder } from 'mongoose';
-import { SurveySort, SuveyProgressStatus } from '@/common/enum';
+import { SurveySort, SuveyProgressStatus } from '@/common/constant/enum';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

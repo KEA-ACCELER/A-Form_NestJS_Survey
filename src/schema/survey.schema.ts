@@ -1,6 +1,6 @@
 import { ABQuestion } from '@/schema/ab-question.schema';
 import { Question } from '@/schema/question.schema';
-import { Status, SurveyType } from '@/common/enum';
+import { Status, SurveyType } from '@/common/constant/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';

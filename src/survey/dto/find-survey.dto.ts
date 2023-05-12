@@ -1,5 +1,5 @@
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
-import { SurveySort, SuveyProgressStatus } from '@/common/enum';
+import { SurveySort, SuveyProgressStatus } from '@/common/constant/enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 

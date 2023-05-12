@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { SurveyType } from '@/common/enum';
+import { SurveyType } from '@/common/constant/enum';
 import { CreateABQuestionRequestDto } from '@/survey/dto/create-abquestion-request.dto';
 import { validateSync } from 'class-validator';
 import { IsDefined } from 'class-validator';

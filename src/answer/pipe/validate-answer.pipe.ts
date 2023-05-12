@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { ABSurvey } from '@/common/enum';
+import { ABSurvey } from '@/common/constant/enum';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
-import { SurveyType } from '@/common/enum';
+import { SurveyType } from '@/common/constant/enum';
 import { SurveyService } from '@/survey/service/survey.service';
 import {
   PipeTransform,
@@ -9,6 +9,7 @@ import {
   Injectable,
   ArgumentMetadata,
 } from '@nestjs/common';
+import { ErrorMessage } from '@/common/constant/error-message';
 
 @Injectable()
 export class ValidateAnswerPipe implements PipeTransform {
@@ -46,20 +47,20 @@ export class ValidateAnswerPipe implements PipeTransform {
           for (const item of answer) {
             // TODO: validate checkbox, radio, shorform
             if (typeof item !== 'string' && typeof item !== 'number') {
-              throw new BadRequestException('Invalid answer type');
+              throw new BadRequestException(ErrorMessage.INVALID_ANSWER_TYPE);
             }
           }
         } else {
-          throw new BadRequestException('Invalid answer type');
+          throw new BadRequestException(ErrorMessage.INVALID_ANSWER_TYPE);
         }
       }
     } else {
-      throw new BadRequestException('Invalid answer type');
+      throw new BadRequestException(ErrorMessage.INVALID_ANSWER_TYPE);
     }
   }
 
   validateABSurvey(requestDto: CreateAnswerRequestDto) {
     if (requestDto.answers !== ABSurvey.A && requestDto.answers !== ABSurvey.B)
-      throw new BadRequestException('answers must be A or B');
+      throw new BadRequestException(ErrorMessage.INVALID_AB_ANSWER_TYPE);
   }
 }

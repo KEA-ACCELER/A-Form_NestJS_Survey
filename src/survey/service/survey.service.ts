@@ -1,7 +1,8 @@
+import { ErrorMessage } from '@/common/constant/error-message';
 import { QueryHelper } from '@/survey/helper/query.helper';
 import { PageDto } from '@/common/dto/page.dto';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
-import { Status, SuveyProgressStatus } from '@/common/enum';
+import { Status, SuveyProgressStatus } from '@/common/constant/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
 import {
@@ -76,7 +77,7 @@ export class SurveyService {
       _id,
       status: Status.NORMAL,
     });
-    if (!survey) throw new NotFoundException('survey not found');
+    if (!survey) throw new NotFoundException(ErrorMessage.NOT_FOUND);
 
     return survey;
   }
@@ -121,7 +122,7 @@ export class SurveyService {
         _id,
       }))
     ) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
     }
   }
 

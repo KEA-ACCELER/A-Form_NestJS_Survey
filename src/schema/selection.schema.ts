@@ -1,4 +1,4 @@
-import { SelectionType } from '@/common/enum';
+import { SelectionType } from '@/common/constant/enum';
 import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
