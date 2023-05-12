@@ -1,15 +1,26 @@
+import { Types } from 'mongoose';
 import { ABSurvey } from '@/common/enum';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { SurveyType } from '@/common/enum';
 import { SurveyService } from '@/survey/service/survey.service';
-import { PipeTransform, BadRequestException, Injectable } from '@nestjs/common';
+import {
+  PipeTransform,
+  BadRequestException,
+  Injectable,
+  ArgumentMetadata,
+} from '@nestjs/common';
 
 @Injectable()
 export class ValidateAnswerPipe implements PipeTransform {
   constructor(private readonly surveyService: SurveyService) {}
 
-  async transform(requestDto: CreateAnswerRequestDto) {
-    const survey = await this.surveyService.findOne(requestDto.survey);
+  async transform(
+    requestDto: CreateAnswerRequestDto,
+    metadata: ArgumentMetadata,
+  ) {
+    const survey = await this.surveyService.findOne(
+      new Types.ObjectId(metadata.data),
+    );
     const { type: surveyType } = survey;
 
     switch (surveyType) {

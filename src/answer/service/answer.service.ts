@@ -24,14 +24,15 @@ export class AnswerService {
 
   async create(
     author: string,
+    survey: Types.ObjectId,
     requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
-    if (await this.checkUserAnswer(author, requestDto.survey)) {
+    if (await this.checkUserAnswer(author, survey)) {
       throw new BadRequestException('Already answered');
     }
 
-    await this.cacheHelper.incrementTotalCount(requestDto.survey.toString());
-    await this.cacheHelper.updateAnswer(requestDto.survey, requestDto.answers);
+    await this.cacheHelper.incrementTotalCount(survey.toString());
+    await this.cacheHelper.updateAnswer(survey, requestDto.answers);
 
     return (
       await this.answerModel.create({
