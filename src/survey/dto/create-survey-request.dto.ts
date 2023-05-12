@@ -2,6 +2,7 @@ import { plainToInstance, Transform } from 'class-transformer';
 import {
   IsArray,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -18,6 +19,8 @@ export class CreateSurveyRequestDto {
   @ApiProperty({
     enum: SurveyType,
   })
+  @IsEnum(SurveyType)
+  @IsNotEmpty()
   type: SurveyType;
 
   @ApiProperty({
