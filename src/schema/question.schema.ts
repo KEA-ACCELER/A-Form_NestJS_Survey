@@ -1,4 +1,4 @@
-import { QuestionType } from '@/common/enum';
+import { QuestionType } from '@/common/constant/enum';
 import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';

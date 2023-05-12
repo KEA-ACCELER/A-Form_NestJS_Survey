@@ -1,5 +1,5 @@
 import { SurveyCheckHelper } from '@/answer/helper/survey-check.helper';
-import { RedisKey, SurveyType } from '@/common/enum';
+import { RedisKey, SurveyType } from '@/common/constant/enum';
 import { RedisHelper } from '@/common/helper/redis.helper';
 import { Answer } from '@/schema/answer.schema';
 import { Injectable } from '@nestjs/common';

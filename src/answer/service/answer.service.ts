@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@/common/constant/error-message';
 // import { CacheHelper } from '@/answer/helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { Answer } from '@/schema/answer.schema';
@@ -25,7 +26,7 @@ export class AnswerService {
     requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
     if (await this.checkUserAnswer(author, survey)) {
-      throw new BadRequestException('Already answered');
+      throw new BadRequestException(ErrorMessage.ALREADY_ANSWERED);
     }
 
     // TODO: redis 로직 확인
@@ -45,7 +46,7 @@ export class AnswerService {
     survey: Types.ObjectId,
   ): Promise<Answer> {
     const result = await this.checkUserAnswer(author, survey);
-    if (!result) throw new BadRequestException('Not found');
+    if (!result) throw new BadRequestException(ErrorMessage.NOT_FOUND);
 
     return result;
   }

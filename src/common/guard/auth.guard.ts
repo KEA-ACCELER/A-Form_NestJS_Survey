@@ -1,5 +1,6 @@
+import { ErrorMessage } from '@/common/constant/error-message';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
-import { UserEndpoint } from '@/common/enum';
+import { UserEndpoint } from '@/common/constant/enum';
 import {
   CanActivate,
   ExecutionContext,
@@ -20,7 +21,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
     }
 
     const { data }: { data: UserResponseDto } = await firstValueFrom(
@@ -33,10 +34,10 @@ export class AuthGuard implements CanActivate {
         .pipe(
           catchError((error: any) => {
             if (error?.response?.status === HttpStatus.FORBIDDEN) {
-              throw new UnauthorizedException();
+              throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
             }
 
-            throw new InternalServerErrorException('User API Connection Err');
+            throw new InternalServerErrorException(ErrorMessage.USER_API_ERR);
           }),
         ),
     );

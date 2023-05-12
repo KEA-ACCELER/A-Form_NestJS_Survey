@@ -1,4 +1,4 @@
-import { SelectionType } from '@/common/enum';
+import { SelectionType } from '@/common/constant/enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 

@@ -1,4 +1,4 @@
-import { SurveyType } from '@/common/enum';
+import { SurveyType } from '@/common/constant/enum';
 import { SurveyService } from '@/survey/service/survey.service';
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';

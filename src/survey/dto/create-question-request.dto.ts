@@ -1,5 +1,5 @@
 import { CreateSelectionRequestDto } from '@/survey/dto/create-selection-request.dto';
-import { QuestionType } from '@/common/enum';
+import { QuestionType } from '@/common/constant/enum';
 import {
   IsArray,
   IsEnum,
