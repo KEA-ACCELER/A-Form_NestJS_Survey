@@ -1,3 +1,8 @@
+import {
+  NormalStatistics,
+  SurveyStatistics,
+  ABStatistics,
+} from '@/survey/dto/survey-statistics.dto';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { Types } from 'mongoose';
@@ -19,6 +24,7 @@ import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -29,11 +35,15 @@ import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 import { AuthGuard } from '@/common/guard/auth.guard';
 import { User } from '@/common/decorator/user.decorator';
+import { AnswerService } from '@/answer/service/answer.service';
 
 @ApiTags('surveys')
 @Controller('surveys')
 export class SurveyController {
-  constructor(private surveyService: SurveyService) {}
+  constructor(
+    private surveyService: SurveyService,
+    private answerService: AnswerService,
+  ) {}
 
   @Post()
   @UseGuards(AuthGuard)
@@ -69,6 +79,22 @@ export class SurveyController {
     @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
   ): Promise<Survey> {
     return await this.surveyService.findOne(_id);
+  }
+
+  @Get(':_id/statistics')
+  @ApiParam({
+    name: '_id',
+    type: String,
+  })
+  @ApiOperation({ summary: '설문 통계 조회 API' })
+  @ApiExtraModels(NormalStatistics, ABStatistics)
+  @ApiOkResponse({
+    type: SurveyStatistics,
+  })
+  async findOneStatistics(
+    @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
+  ): Promise<SurveyStatistics> {
+    return await this.answerService.findOneStatistics(_id);
   }
 
   @Patch(':_id')
