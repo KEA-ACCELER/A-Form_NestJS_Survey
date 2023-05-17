@@ -1,6 +1,6 @@
-import { SurveyType } from '@/common/constant/enum';
+import { ABSurvey, SurveyType } from '@/common/constant/enum';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNumber, IsObject, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsObject } from 'class-validator';
 
 export class NormalStatistics {
   @ApiProperty({
@@ -26,10 +26,10 @@ export class NormalStatistics {
 
 export class ABStatistics {
   @ApiProperty({
-    type: String,
+    enum: ABSurvey,
   })
-  @IsString()
-  type: string;
+  @IsEnum(ABSurvey)
+  type: ABSurvey;
 
   @ApiProperty({
     type: Number,
@@ -37,9 +37,16 @@ export class ABStatistics {
   @IsNumber()
   count: number;
 
-  constructor(type: string, count: number) {
+  @ApiProperty({
+    type: Number,
+  })
+  @IsNumber()
+  percent: number;
+
+  constructor(type: ABSurvey, count: number, percent: number) {
     this.type = type;
     this.count = count;
+    this.percent = percent;
   }
 }
 
@@ -58,11 +65,13 @@ export class SurveyStatistics {
 
   @IsArray()
   @ApiProperty({
-    isArray: true,
-    oneOf: [
-      { $ref: getSchemaPath(NormalStatistics) },
-      { $ref: getSchemaPath(ABStatistics) },
-    ],
+    type: 'array',
+    items: {
+      oneOf: [
+        { $ref: getSchemaPath(ABStatistics) },
+        { $ref: getSchemaPath(NormalStatistics) },
+      ],
+    },
   })
   statistics: NormalStatistics[] | ABStatistics[];
 

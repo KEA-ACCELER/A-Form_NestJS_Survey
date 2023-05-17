@@ -42,15 +42,17 @@ export class Survey {
   deadline: Date;
 
   @ApiProperty({
-    isArray: true,
-    oneOf: [
-      {
-        $ref: getSchemaPath(Question),
-      },
-      {
-        $ref: getSchemaPath(ABQuestion),
-      },
-    ],
+    type: 'array',
+    items: {
+      oneOf: [
+        {
+          $ref: getSchemaPath(Question),
+        },
+        {
+          $ref: getSchemaPath(ABQuestion),
+        },
+      ],
+    },
   })
   // Mongoose 스키마에서는 배열의 각 요소가 다른 유형 가질 수 없음
   @Prop({

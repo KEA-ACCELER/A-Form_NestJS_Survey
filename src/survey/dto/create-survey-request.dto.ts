@@ -38,11 +38,17 @@ export class CreateSurveyRequestDto {
   deadline: Date;
 
   @ApiProperty({
-    isArray: true,
-    oneOf: [
-      { $ref: getSchemaPath(CreateABQuestionRequestDto) },
-      { $ref: getSchemaPath(CreateQuestionRequestDto) },
-    ],
+    type: 'array',
+    items: {
+      oneOf: [
+        {
+          $ref: getSchemaPath(CreateABQuestionRequestDto),
+        },
+        {
+          $ref: getSchemaPath(CreateQuestionRequestDto),
+        },
+      ],
+    },
   })
   @IsArray()
   @IsDefined()
