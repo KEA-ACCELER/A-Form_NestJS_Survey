@@ -1,4 +1,6 @@
 export class UserResponseDto {
+  userPk: string;
+
   userId: string;
 
   userPw: string;
@@ -14,6 +16,7 @@ export class UserResponseDto {
   gender?: boolean;
 
   constructor(
+    userPk: string,
     userId: string,
     userPw: string,
     email: string,
@@ -22,6 +25,7 @@ export class UserResponseDto {
     birth?: any,
     gender?: boolean,
   ) {
+    this.userPk = userPk;
     this.userId = userId;
     this.userPw = userPw;
     this.email = email;
