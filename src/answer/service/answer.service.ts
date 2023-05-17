@@ -1,7 +1,9 @@
+import { Question } from '@/schema/question.schema';
 import {
   SurveyStatistics,
   NormalStatistics,
   ABStatistics,
+  NormalStatisticsValue,
 } from '@/survey/dto/survey-statistics.dto';
 import { ErrorMessage } from '@/common/constant/error-message';
 // import { CacheHelper } from '@/answer/helper/cache.helper';
@@ -75,11 +77,11 @@ export class AnswerService {
 
     switch ((await this.surveyService.findOne(survey)).type) {
       case SurveyType.NORMAL: {
-        statistics = await this.findNormalSurveyStatistics(survey);
+        statistics = await this.findNormalSurveyStatistics(survey, totalCnt);
         break;
       }
       case SurveyType.AB: {
-        statistics = await this.findABSurveyStatistics(survey);
+        statistics = await this.findABSurveyStatistics(survey, totalCnt);
         break;
       }
     }
@@ -93,8 +95,9 @@ export class AnswerService {
   // index 기준으로 그룹화하고, 각 그룹의 수 계산
   async findNormalSurveyStatistics(
     survey: Types.ObjectId,
+    totalCnt: number,
   ): Promise<NormalStatistics[]> {
-    const result = await this.answerModel.aggregate([
+    const statistics = await this.answerModel.aggregate([
       { $match: { survey } },
       { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
       { $unwind: '$answers' },
@@ -107,23 +110,39 @@ export class AnswerService {
       {
         $group: {
           _id: '$_id.index',
-          values: { $push: { k: { $toString: '$_id.value' }, v: '$count' } },
+          values: {
+            $push: { answer: { $toString: '$_id.value' }, count: '$count' },
+          },
         },
       },
       {
         $project: {
           _id: 0,
           index: '$_id',
-          values: { $arrayToObject: '$values' },
+          values: '$values',
         },
       },
     ]);
 
-    return result.map((item) => new NormalStatistics(item.index, item.values));
+    const { questions } = (await this.surveyService.findOne(survey)) as {
+      questions: Question[];
+    };
+
+    statistics.map((item, idx) => {
+      item.type = questions[idx].type;
+      item.values.map((value: NormalStatisticsValue) => {
+        value.percent = Math.round((value.count / totalCnt) * 100);
+      });
+    });
+
+    return statistics.map(
+      (item) => new NormalStatistics(item.index, item.type, item.values),
+    );
   }
 
   async findABSurveyStatistics(
     survey: Types.ObjectId,
+    totalCnt: number,
   ): Promise<ABStatistics[]> {
     let statistics = await this.answerModel.aggregate([
       { $match: { survey } },
@@ -142,22 +161,28 @@ export class AnswerService {
       },
     ]);
 
+    statistics.map((item) => {
+      item.percent = Math.round((item.count / totalCnt) * 100);
+    });
+
     if (statistics.length === 0) {
       statistics = [
-        { type: ABSurvey.A, count: 0 },
-        { type: ABSurvey.B, count: 0 },
+        new ABStatistics(ABSurvey.A, 0, 0),
+        new ABStatistics(ABSurvey.B, 0, 0),
       ];
     } else if (statistics.length === 1) {
       switch (statistics[0].type) {
         case ABSurvey.A:
-          statistics.push({ type: ABSurvey.B, count: 0 });
+          statistics.push(new ABStatistics(ABSurvey.B, 0, 0));
           break;
         case ABSurvey.B:
-          statistics.push({ type: ABSurvey.A, count: 0 });
+          statistics.push(new ABStatistics(ABSurvey.A, 0, 0));
           break;
       }
     }
 
-    return statistics.map((item) => new ABStatistics(item.type, item.count));
+    return statistics.map(
+      (item) => new ABStatistics(item.type, item.count, item.percent),
+    );
   }
 }

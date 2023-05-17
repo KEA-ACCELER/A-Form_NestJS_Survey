@@ -1,6 +1,31 @@
-import { ABSurvey, SurveyType } from '@/common/constant/enum';
+import { ABSurvey, QuestionType, SurveyType } from '@/common/constant/enum';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNumber, IsObject } from 'class-validator';
+import { IsArray, IsEnum, IsNumber } from 'class-validator';
+
+export class NormalStatisticsValue {
+  @ApiProperty({
+    type: String,
+  })
+  index: string;
+
+  @ApiProperty({
+    type: Number,
+  })
+  @IsNumber()
+  count: number;
+
+  @ApiProperty({
+    type: Number,
+  })
+  @IsNumber()
+  percent?: number;
+
+  constructor(index: string, count: number, percent: number) {
+    this.index = index;
+    this.count = count;
+    this.percent = percent;
+  }
+}
 
 export class NormalStatistics {
   @ApiProperty({
@@ -9,17 +34,25 @@ export class NormalStatistics {
   @IsNumber()
   index: number;
 
-  @ApiProperty({
-    type: Object,
-    additionalProperties: {
-      type: 'number',
-    },
-  })
-  @IsObject()
-  values: Record<string, number>;
+  // TODO: surveyType을 넣어야함
 
-  constructor(index: number, values: Record<string, number>) {
+  @ApiProperty({
+    enum: QuestionType,
+  })
+  type: QuestionType;
+
+  @ApiProperty({
+    type: 'array',
+  })
+  values: NormalStatisticsValue;
+
+  constructor(
+    index: number,
+    type: QuestionType,
+    values: NormalStatisticsValue,
+  ) {
     this.index = index;
+    this.type = type;
     this.values = values;
   }
 }

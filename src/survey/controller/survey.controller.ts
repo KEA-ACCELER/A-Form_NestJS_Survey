@@ -2,6 +2,7 @@ import {
   NormalStatistics,
   SurveyStatistics,
   ABStatistics,
+  NormalStatisticsValue,
 } from '@/survey/dto/survey-statistics.dto';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
@@ -94,7 +95,7 @@ export class SurveyController {
     type: String,
   })
   @ApiOperation({ summary: '설문 통계 조회 API' })
-  @ApiExtraModels(NormalStatistics, ABStatistics)
+  @ApiExtraModels(NormalStatistics, ABStatistics, NormalStatisticsValue)
   @ApiOkResponse({
     type: SurveyStatistics,
   })
