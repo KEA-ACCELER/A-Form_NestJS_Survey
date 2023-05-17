@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type AnswerDocument = HydratedDocument<Answer>;
 
@@ -46,10 +46,19 @@ export class Answer {
   updatedAt: Date;
 
   @ApiProperty({
-    isArray: true,
+    type: 'array',
+    description:
+      'Normal Survey -> 2차원 배열(shortform일 경우 string, checkbox, radio일 경우 number), AB Survey -> string',
+    items: {
+      oneOf: [
+        { type: 'array', items: { type: 'string' } },
+        { type: 'array', items: { type: 'number' } },
+        { type: 'string' },
+      ],
+    },
   })
   @Prop({
-    type: [[String, Number]],
+    type: mongoose.Schema.Types.Mixed,
   })
   answers: [string | number][] | string;
 

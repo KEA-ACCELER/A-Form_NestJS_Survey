@@ -1,3 +1,5 @@
+import { ABQuestion } from '@/schema/ab-question.schema';
+import { Question } from '@/schema/question.schema';
 import { AnswerService } from '@/answer/service/answer.service';
 import { User } from '@/common/decorator/user.decorator';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
@@ -9,6 +11,7 @@ import { SurveyService } from '@/survey/service/survey.service';
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -44,6 +47,7 @@ export class MyPageController {
 
   @Get('surveys')
   @ApiOperation({ summary: '나의 설문 목록 조회 API' })
+  @ApiExtraModels(Question, ABQuestion)
   @ApiOkResponse({
     type: [Survey],
   })

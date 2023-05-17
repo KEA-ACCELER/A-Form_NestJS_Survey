@@ -3,7 +3,7 @@ import { Question } from '@/schema/question.schema';
 import { Status, SurveyType } from '@/common/constant/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
@@ -42,16 +42,17 @@ export class Survey {
   deadline: Date;
 
   @ApiProperty({
-    isArray: true,
-    // TODO: 해당 스키마 찾지 못하는 에러 확인 필요
-    // oneOf: [
-    //   {
-    //     $ref: getSchemaPath(Question),
-    //   },
-    //   {
-    //     $ref: getSchemaPath(ABQuestion),
-    //   },
-    // ],
+    type: 'array',
+    items: {
+      oneOf: [
+        {
+          $ref: getSchemaPath(Question),
+        },
+        {
+          $ref: getSchemaPath(ABQuestion),
+        },
+      ],
+    },
   })
   // Mongoose 스키마에서는 배열의 각 요소가 다른 유형 가질 수 없음
   @Prop({
