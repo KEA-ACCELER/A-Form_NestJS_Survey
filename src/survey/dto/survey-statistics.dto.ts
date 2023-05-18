@@ -42,7 +42,8 @@ export class NormalStatistics {
   type: QuestionType;
 
   @ApiProperty({
-    type: 'array',
+    isArray: true,
+    type: NormalStatisticsValue,
   })
   values: NormalStatisticsValue;
 
