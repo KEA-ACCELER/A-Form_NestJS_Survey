@@ -19,12 +19,6 @@ export enum SelectionType {
   IMAGE = 'IMAGE',
 }
 
-export enum SuveyProgressStatus {
-  ALL = 'all',
-  IN_PROGRESS = 'in-progress', // 진행중
-  END = 'end', // 종료
-}
-
 export enum SurveySort {
   POPULAR = 'popular', // 인기순
   ASC = 'asc', // 오름차순

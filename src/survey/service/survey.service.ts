@@ -2,7 +2,7 @@ import { ErrorMessage } from '@/common/constant/error-message';
 import { QueryHelper } from '@/survey/helper/query.helper';
 import { PageDto } from '@/common/dto/page.dto';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
-import { Status, SuveyProgressStatus } from '@/common/constant/enum';
+import { Status } from '@/common/constant/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
 import {
@@ -45,20 +45,12 @@ export class SurveyService {
       ? this.queryHelper.getKeywordQuery(query.content)
       : null;
 
-    const progressQuery =
-      query.progressStatus !== SuveyProgressStatus.ALL
-        ? this.queryHelper.getProgressQuery(query.progressStatus)
-        : null;
-
     const findQuery: FilterQuery<Survey> = {
       status: Status.NORMAL,
     };
 
-    if (keywordQuery || progressQuery) {
-      findQuery.$or = [
-        ...(keywordQuery ? keywordQuery : []),
-        ...(progressQuery ? progressQuery : []),
-      ];
+    if (keywordQuery) {
+      findQuery.$or = [...(keywordQuery ? keywordQuery : [])];
     }
 
     const total = await this.surveyModel.find(findQuery).count();

@@ -1,7 +1,6 @@
 import { plainToInstance, Transform } from 'class-transformer';
 import {
   IsArray,
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -29,13 +28,6 @@ export class CreateSurveyRequestDto {
   @IsString()
   @IsNotEmpty()
   title: string;
-
-  @ApiProperty({
-    type: Date,
-  })
-  @IsDate()
-  @IsNotEmpty()
-  deadline: Date;
 
   @ApiProperty({
     type: 'array',
@@ -74,13 +66,11 @@ export class CreateSurveyRequestDto {
   constructor(
     type: SurveyType,
     title: string,
-    deadline: Date,
     questions: any,
     description?: string,
   ) {
     this.type = type;
     this.title = title;
-    this.deadline = deadline;
     this.questions = questions;
     this.description = description;
   }
