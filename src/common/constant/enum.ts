@@ -26,7 +26,7 @@ export enum SurveySort {
 }
 
 export enum UserEndpoint {
-  GET_USER_INFO_URI = 'app/user/info',
+  GET_USER_INFO_URI = 'api/user/info',
 }
 
 export enum RedisKey {
