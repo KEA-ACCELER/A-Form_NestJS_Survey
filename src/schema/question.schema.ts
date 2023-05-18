@@ -18,6 +18,12 @@ export class Question {
   type: QuestionType;
 
   @ApiProperty({
+    type: Boolean,
+  })
+  @Prop({ type: Boolean })
+  isRequired: boolean;
+
+  @ApiProperty({
     isArray: true,
     type: Selection,
     required: false,
@@ -25,9 +31,15 @@ export class Question {
   @Prop({ type: Types.Array })
   selections?: Selection[];
 
-  constructor(title: string, type: QuestionType, selections?: Selection[]) {
+  constructor(
+    title: string,
+    type: QuestionType,
+    isRequired: boolean,
+    selections?: Selection[],
+  ) {
     this.title = title;
     this.type = type;
+    this.isRequired = isRequired;
     this.selections = selections;
   }
 }

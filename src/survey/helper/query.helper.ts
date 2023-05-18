@@ -1,5 +1,5 @@
 import { SortOrder } from 'mongoose';
-import { SurveySort, SuveyProgressStatus } from '@/common/constant/enum';
+import { SurveySort } from '@/common/constant/enum';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -24,28 +24,5 @@ export class QueryHelper {
       { discription: { $regex: content, $options: 'i' } },
       // TODO: author name check
     ];
-  }
-
-  getProgressQuery(progressStatus?: SuveyProgressStatus): any {
-    switch (progressStatus) {
-      case SuveyProgressStatus.END: {
-        return [
-          {
-            deadline: {
-              $lt: new Date(),
-            },
-          },
-        ];
-      }
-      case SuveyProgressStatus.IN_PROGRESS: {
-        return [
-          {
-            deadline: {
-              $gt: new Date(),
-            },
-          },
-        ];
-      }
-    }
   }
 }

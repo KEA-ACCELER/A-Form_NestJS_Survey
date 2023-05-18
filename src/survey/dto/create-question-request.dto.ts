@@ -2,6 +2,7 @@ import { CreateSelectionRequestDto } from '@/survey/dto/create-selection-request
 import { QuestionType } from '@/common/constant/enum';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -23,6 +24,11 @@ export class CreateQuestionRequestDto {
   @IsEnum(QuestionType)
   type: QuestionType;
 
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  @IsNotEmpty()
+  isRequired: boolean;
+
   @ApiProperty({ isArray: true, type: CreateSelectionRequestDto })
   @IsArray()
   @IsOptional()
@@ -30,9 +36,15 @@ export class CreateQuestionRequestDto {
   @Type(() => CreateSelectionRequestDto)
   selections?: Selection[];
 
-  constructor(title: string, type: QuestionType, selections?: Selection[]) {
+  constructor(
+    title: string,
+    type: QuestionType,
+    isRequired: boolean,
+    selections?: Selection[],
+  ) {
     this.title = title;
     this.type = type;
+    this.isRequired = isRequired;
     this.selections = selections;
   }
 }

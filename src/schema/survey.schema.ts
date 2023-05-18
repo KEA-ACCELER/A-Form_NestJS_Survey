@@ -36,12 +36,6 @@ export class Survey {
   author: string;
 
   @ApiProperty({
-    type: Date,
-  })
-  @Prop({ type: Date, required: true })
-  deadline: Date;
-
-  @ApiProperty({
     type: 'array',
     items: {
       oneOf: [
@@ -93,38 +87,26 @@ export class Survey {
   @Prop({ type: String })
   description?: string;
 
-  @ApiProperty({
-    isArray: true,
-  })
-  @Prop({
-    type: [[Number, String]],
-  })
-  statistics?: (number | string)[][];
-
   constructor(
     _id: string,
     type: SurveyType,
     title: string,
     author: string,
-    deadline: Date,
     questions: Question[] | ABQuestion[],
     createdAt: Date,
     updatedAt: Date,
     status: Status,
     description?: string,
-    statistics?: (number | string)[][],
   ) {
     this._id = _id;
     this.type = type;
     this.title = title;
     this.author = author;
-    this.deadline = deadline;
     this.questions = questions;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.status = status;
     this.description = description;
-    this.statistics = statistics;
   }
 }
 
