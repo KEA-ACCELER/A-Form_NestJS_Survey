@@ -1,3 +1,4 @@
+import { PageDto } from '@/common/dto/page.dto';
 import { Question } from '@/schema/question.schema';
 import {
   SurveyStatistics,
@@ -14,6 +15,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SurveyService } from '@/survey/service/survey.service';
 import { SurveyType, ABSurvey } from '@/common/constant/enum';
+import { Survey } from '@/schema/survey.schema';
+import { BaseQueryDto } from '@/common/dto/base-query.dto';
 
 @Injectable()
 export class AnswerService {
@@ -64,7 +67,6 @@ export class AnswerService {
     return result;
   }
 
-  // TODO: percent 추가 필요
   async findOneStatistics(survey: Types.ObjectId): Promise<SurveyStatistics> {
     const totalCnt = await this.answerModel.countDocuments({
       survey,
@@ -184,5 +186,34 @@ export class AnswerService {
     return statistics.map(
       (item) => new ABStatistics(item.type, item.count, item.percent),
     );
+  }
+
+  async finyMyAnsweredSurvey(
+    userId: string,
+    query: BaseQueryDto,
+  ): Promise<PageDto<Survey[]>> {
+    const { page, offset } = query;
+
+    const total = await this.answerModel.find({ author: userId }).count();
+
+    const surveys = (
+      await this.answerModel
+        .find({
+          author: userId,
+        })
+        .skip((page - 1) * offset)
+        .limit(offset)
+        .sort('-createdAt')
+        .select('survey')
+    ).map((item) => item.survey);
+
+    const data: Survey[] = [];
+    await Promise.all(
+      surveys.map(async (survey) => {
+        data.push(await this.surveyService.findOne(survey));
+      }),
+    );
+
+    return new PageDto(page, offset, total, data);
   }
 }

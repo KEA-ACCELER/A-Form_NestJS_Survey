@@ -36,7 +36,6 @@ export class SurveyService {
   async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
     const { page, offset } = query;
 
-    // TODO: add view
     const sortQuery: { [key: string]: SortOrder } = query?.sort
       ? this.queryHelper.getSortQuery(query.sort)
       : { createdAt: -1 };
@@ -118,10 +117,37 @@ export class SurveyService {
     }
   }
 
-  async findMySurveys(author: string): Promise<Survey[]> {
-    return await this.surveyModel.find({
+  async findMySurveys(
+    author: string,
+    query: FindSurveyDto,
+  ): Promise<PageDto<Survey[]>> {
+    const { page, offset } = query;
+
+    const sortQuery: { [key: string]: SortOrder } = query?.sort
+      ? this.queryHelper.getSortQuery(query.sort)
+      : { createdAt: -1 };
+
+    const keywordQuery = query?.content
+      ? this.queryHelper.getKeywordQuery(query.content)
+      : null;
+
+    const findQuery: FilterQuery<Survey> = {
       author,
       status: Status.NORMAL,
-    });
+    };
+
+    if (keywordQuery) {
+      findQuery.$or = [...(keywordQuery ? keywordQuery : [])];
+    }
+
+    const total = await this.surveyModel.find(findQuery).count();
+
+    const data = await this.surveyModel
+      .find(findQuery)
+      .skip((page - 1) * offset)
+      .limit(offset)
+      .sort(sortQuery);
+
+    return new PageDto(page, offset, total, data);
   }
 }
