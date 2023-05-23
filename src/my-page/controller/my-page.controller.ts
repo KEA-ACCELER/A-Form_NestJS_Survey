@@ -1,3 +1,4 @@
+import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { ABQuestion } from '@/schema/ab-question.schema';
 import { Question } from '@/schema/question.schema';
@@ -51,11 +52,12 @@ export class MyPageController {
   @Get('surveys')
   @ApiOperation({ summary: '나의 설문 목록 조회 API' })
   @ApiExtraModels(Question, ABQuestion)
-  @ApiOkResponse({
-    type: [Survey],
-  })
-  findMySurveys(@User() user: UserResponseDto): Promise<Survey[]> {
-    return this.surveyService.findMySurveys(user.userId);
+  @PaginationResponse(Survey)
+  findMySurveys(
+    @User() user: UserResponseDto,
+    @Query() query: FindSurveyDto,
+  ): Promise<PageDto<Survey[]>> {
+    return this.surveyService.findMySurveys(user.userId, query);
   }
 
   @Get('surveys/answer')
