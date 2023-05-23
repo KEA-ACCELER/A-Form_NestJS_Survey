@@ -1,3 +1,4 @@
+import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { ABQuestion } from '@/schema/ab-question.schema';
 import { Question } from '@/schema/question.schema';
 import { AnswerService } from '@/answer/service/answer.service';
@@ -8,7 +9,7 @@ import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
 import { Answer } from '@/schema/answer.schema';
 import { Survey } from '@/schema/survey.schema';
 import { SurveyService } from '@/survey/service/survey.service';
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -18,6 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { PageDto } from '@/common/dto/page.dto';
+import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 
 @ApiTags('my-page')
 @ApiBearerAuth()
@@ -53,5 +56,15 @@ export class MyPageController {
   })
   findMySurveys(@User() user: UserResponseDto): Promise<Survey[]> {
     return this.surveyService.findMySurveys(user.userId);
+  }
+
+  @Get('surveys/answer')
+  @ApiOperation({ summary: '내가 응답한 설문 조회 API' })
+  @PaginationResponse(Survey)
+  finyMyAnsweredSurvey(
+    @User() user: UserResponseDto,
+    @Query() query: BaseQueryDto,
+  ): Promise<PageDto<Survey[]>> {
+    return this.answerService.finyMyAnsweredSurvey(user.userId, query);
   }
 }
