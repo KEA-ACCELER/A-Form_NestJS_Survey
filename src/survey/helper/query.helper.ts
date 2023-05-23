@@ -22,7 +22,7 @@ export class QueryHelper {
     return [
       { title: { $regex: content, $options: 'i' } },
       { discription: { $regex: content, $options: 'i' } },
-      // TODO: author name check
+      { author: { $regex: content, $options: 'i' } },
     ];
   }
 }

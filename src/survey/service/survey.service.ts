@@ -36,7 +36,6 @@ export class SurveyService {
   async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
     const { page, offset } = query;
 
-    // TODO: add view
     const sortQuery: { [key: string]: SortOrder } = query?.sort
       ? this.queryHelper.getSortQuery(query.sort)
       : { createdAt: -1 };

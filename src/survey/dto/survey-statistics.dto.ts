@@ -34,8 +34,6 @@ export class NormalStatistics {
   @IsNumber()
   index: number;
 
-  // TODO: surveyType을 넣어야함
-
   @ApiProperty({
     enum: QuestionType,
   })

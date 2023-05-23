@@ -67,7 +67,6 @@ export class AnswerService {
     return result;
   }
 
-  // TODO: percent 추가 필요
   async findOneStatistics(survey: Types.ObjectId): Promise<SurveyStatistics> {
     const totalCnt = await this.answerModel.countDocuments({
       survey,

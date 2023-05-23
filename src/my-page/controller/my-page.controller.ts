@@ -60,7 +60,7 @@ export class MyPageController {
     return this.surveyService.findMySurveys(user.userId, query);
   }
 
-  @Get('surveys/answer')
+  @Get('surveys/answers')
   @ApiOperation({ summary: '내가 응답한 설문 조회 API' })
   @PaginationResponse(Survey)
   finyMyAnsweredSurvey(
