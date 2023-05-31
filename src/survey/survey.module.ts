@@ -1,5 +1,6 @@
 import { Answer, AnswerSchema } from '@/schema/answer.schema';
 import { PopularSurveyHelper } from './helper/popular-survey.helper';
+import { TransformHelper } from '@/survey/helper/transform.helper';
 import { AnswerModule } from '@/answer/answer.module';
 import { HttpModule } from '@nestjs/axios';
 import { QueryHelper } from '@/survey/helper/query.helper';
@@ -18,7 +19,7 @@ import { SurveyController } from '@/survey/controller/survey.controller';
     HttpModule,
     forwardRef(() => AnswerModule),
   ],
-  providers: [SurveyService, QueryHelper, PopularSurveyHelper],
+  providers: [SurveyService, QueryHelper, TransformHelper, PopularSurveyHelper],
   controllers: [SurveyController],
   exports: [SurveyService],
 })

@@ -1,33 +1,30 @@
 import { Status } from '@/common/constant/enum';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export type FileDocument = HydratedDocument<File>;
-
-@Schema({
-  timestamps: true,
-})
-export class File {
-  @Prop({ type: String })
+export class FileResponseDto {
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
   originName: string;
 
-  @Prop({ type: String })
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsNotEmpty()
   s3Link: string;
 
-  @Prop({
+  @ApiProperty({
     type: Date,
   })
   createdAt: Date;
 
-  @Prop({
+  @ApiProperty({
     type: Date,
   })
   updatedAt: Date;
 
-  @Prop({
-    type: String,
+  @ApiProperty({
     enum: Status,
-    default: Status.NORMAL,
   })
   status: Status;
 
@@ -45,5 +42,3 @@ export class File {
     this.status = status;
   }
 }
-
-export const FileSchema = SchemaFactory.createForClass(File);

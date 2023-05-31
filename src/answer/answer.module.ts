@@ -9,6 +9,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Answer, AnswerSchema } from '@/schema/answer.schema';
 import { SurveyModule } from '@/survey/survey.module';
 import { RedisHelper } from '@/common/helper/redis.helper';
+import { TransformHelper as SurveyTransformHelper } from '@/survey/helper/transform.helper';
+import { TransformHelper as AnswerTransformHelper } from '@/answer/helper/transform.helper';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { RedisHelper } from '@/common/helper/redis.helper';
     CacheHelper,
     SurveyCheckHelper,
     ValidateAnswerPipe,
+    SurveyTransformHelper,
+    AnswerTransformHelper,
   ],
   exports: [AnswerService],
 })

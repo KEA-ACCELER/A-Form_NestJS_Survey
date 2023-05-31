@@ -16,6 +16,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { FindPopularSurveyDto } from '../dto/find-popular-survey.dto';
+import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
+import { TransformHelper } from '@/survey/helper/transform.helper';
 
 @Injectable()
 export class SurveyService {
@@ -24,6 +26,7 @@ export class SurveyService {
     @InjectModel(Answer.name) private answerModel: Model<Answer>,
     private queryHelper: QueryHelper,
     private popularSurveyHelper: PopularSurveyHelper,
+    private transformHelper: TransformHelper,
   ) {}
 
   async create(
@@ -38,7 +41,7 @@ export class SurveyService {
     )._id.toString();
   }
 
-  async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
+  async findAll(query: FindSurveyDto): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
     const sortQuery: { [key: string]: SortOrder } = query?.sort
@@ -65,17 +68,22 @@ export class SurveyService {
       .limit(offset)
       .sort(sortQuery);
 
-    return new PageDto(page, offset, total, data);
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.transformHelper.toArrayResponseDto(data),
+    );
   }
 
-  async findOne(_id: Types.ObjectId): Promise<Survey> {
+  async findOne(_id: Types.ObjectId): Promise<SurveyResponseDto> {
     const survey = await this.surveyModel.findOne({
       _id,
       status: Status.NORMAL,
     });
     if (!survey) throw new NotFoundException(ErrorMessage.NOT_FOUND);
 
-    return survey;
+    return this.transformHelper.toResponseDto(survey);
   }
 
   async update(
@@ -122,11 +130,43 @@ export class SurveyService {
     }
   }
 
-  async findMySurveys(author: string): Promise<Survey[]> {
-    return await this.surveyModel.find({
+  async findMySurveys(
+    author: string,
+    query: FindSurveyDto,
+  ): Promise<PageDto<SurveyResponseDto[]>> {
+    const { page, offset } = query;
+
+    const sortQuery: { [key: string]: SortOrder } = query?.sort
+      ? this.queryHelper.getSortQuery(query.sort)
+      : { createdAt: -1 };
+
+    const keywordQuery = query?.content
+      ? this.queryHelper.getKeywordQuery(query.content)
+      : null;
+
+    const findQuery: FilterQuery<Survey> = {
       author,
       status: Status.NORMAL,
-    });
+    };
+
+    if (keywordQuery) {
+      findQuery.$or = [...(keywordQuery ? keywordQuery : [])];
+    }
+
+    const total = await this.surveyModel.find(findQuery).count();
+
+    const data = await this.surveyModel
+      .find(findQuery)
+      .skip((page - 1) * offset)
+      .limit(offset)
+      .sort(sortQuery);
+
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.transformHelper.toArrayResponseDto(data),
+    );
   }
 
   // 인기글은 입력받은 시간의 한 시간 전 가장 응답이 많은 순 5개

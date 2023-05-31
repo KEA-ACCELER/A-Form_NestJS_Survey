@@ -1,11 +1,15 @@
 import { SelectionType } from '@/common/constant/enum';
-import { Prop } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class Selection {
-  @Prop({ type: String, enum: SelectionType, required: true })
+export class SelectionResponseDto {
+  @ApiProperty({
+    enum: SelectionType,
+  })
   type: SelectionType;
 
-  @Prop({ type: String, required: true })
+  @ApiProperty({
+    type: String,
+  })
   content: string;
 
   constructor(type: SelectionType, content: string) {

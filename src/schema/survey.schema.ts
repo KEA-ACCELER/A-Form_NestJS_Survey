@@ -3,7 +3,6 @@ import { Question } from '@/schema/question.schema';
 import { Status, SurveyType } from '@/common/constant/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
@@ -11,43 +10,18 @@ export type SurveyDocument = HydratedDocument<Survey>;
   timestamps: true,
 })
 export class Survey {
-  @ApiProperty({
-    type: String,
-  })
   _id: string;
 
-  @ApiProperty({
-    enum: SurveyType,
-  })
   @Prop({ type: String, enum: SurveyType, required: true })
   type: SurveyType;
 
-  @ApiProperty({
-    type: String,
-  })
   @Prop({ type: String, required: true })
   title: string;
 
   // User API에서 받은 userId
-  @ApiProperty({
-    type: String,
-  })
   @Prop({ type: String, required: true })
   author: string;
 
-  @ApiProperty({
-    type: 'array',
-    items: {
-      oneOf: [
-        {
-          $ref: getSchemaPath(Question),
-        },
-        {
-          $ref: getSchemaPath(ABQuestion),
-        },
-      ],
-    },
-  })
   // Mongoose 스키마에서는 배열의 각 요소가 다른 유형 가질 수 없음
   @Prop({
     type: [mongoose.Schema.Types.Mixed],
@@ -55,25 +29,16 @@ export class Survey {
   })
   questions: Question[] | ABQuestion[];
 
-  @ApiProperty({
-    type: Date,
-  })
   @Prop({
     type: Date,
   })
   createdAt: Date;
 
-  @ApiProperty({
-    type: Date,
-  })
   @Prop({
     type: Date,
   })
   updatedAt: Date;
 
-  @ApiProperty({
-    enum: Status,
-  })
   @Prop({
     type: String,
     enum: Status,
@@ -81,9 +46,6 @@ export class Survey {
   })
   status: Status;
 
-  @ApiProperty({
-    type: String,
-  })
   @Prop({ type: String })
   description?: string;
 
