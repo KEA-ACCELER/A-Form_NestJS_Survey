@@ -1,3 +1,5 @@
+import { Answer } from '@/schema/answer.schema';
+import { PopularSurveyHelper } from '@/survey/helper/popular-survey.helper';
 import { ErrorMessage } from '@/common/constant/error-message';
 import { QueryHelper } from '@/survey/helper/query.helper';
 import { PageDto } from '@/common/dto/page.dto';
@@ -13,12 +15,15 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
+import { FindPopularSurveyDto } from '../dto/find-popular-survey.dto';
 
 @Injectable()
 export class SurveyService {
   constructor(
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
+    @InjectModel(Answer.name) private answerModel: Model<Answer>,
     private queryHelper: QueryHelper,
+    private popularSurveyHelper: PopularSurveyHelper,
   ) {}
 
   async create(
@@ -36,7 +41,6 @@ export class SurveyService {
   async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
     const { page, offset } = query;
 
-    // TODO: add view
     const sortQuery: { [key: string]: SortOrder } = query?.sort
       ? this.queryHelper.getSortQuery(query.sort)
       : { createdAt: -1 };
@@ -123,5 +127,41 @@ export class SurveyService {
       author,
       status: Status.NORMAL,
     });
+  }
+
+  // 인기글은 입력받은 시간의 한 시간 전 가장 응답이 많은 순 5개
+  // 만일 응답이 많은 survey가 5개가 없다면 그 시간대의 글을 오래된 순으로
+  async findPopular(query: FindPopularSurveyDto): Promise<Survey[]> {
+    const [startTime, endTime] =
+      this.popularSurveyHelper.getResponseTimeRange(query);
+
+    const popularSurvey = await this.answerModel.aggregate([
+      { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
+      { $group: { _id: '$survey' } },
+      { $limit: 5 },
+    ]);
+
+    const popularSurveyIds = popularSurvey.map((item) => item._id);
+
+    if (popularSurvey.length !== 5) {
+      const surveyAtThatTime = await this.surveyModel
+        .find({
+          createdAt: {
+            $gte: startTime,
+            $lte: endTime,
+          },
+          _id: {
+            $nin: popularSurveyIds,
+          },
+        })
+        .sort({
+          createdAt: 1,
+        })
+        .limit(5 - popularSurvey.length);
+
+      popularSurvey.push(...surveyAtThatTime);
+    }
+
+    return popularSurvey;
   }
 }

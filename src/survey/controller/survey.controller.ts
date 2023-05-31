@@ -39,8 +39,9 @@ import { User } from '@/common/decorator/user.decorator';
 import { AnswerService } from '@/answer/service/answer.service';
 import { Question } from '@/schema/question.schema';
 import { ABQuestion } from '@/schema/ab-question.schema';
-import { CreateABQuestionRequestDto } from '../dto/create-abquestion-request.dto';
-import { CreateQuestionRequestDto } from '../dto/create-question-request.dto';
+import { CreateABQuestionRequestDto } from '@/survey/dto/create-abquestion-request.dto';
+import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
+import { FindPopularSurveyDto } from '@/survey/dto/find-popular-survey.dto';
 
 @ApiTags('surveys')
 @Controller('surveys')
@@ -71,6 +72,15 @@ export class SurveyController {
   @PaginationResponse(Survey)
   async findAll(@Query() query: FindSurveyDto): Promise<PageDto<Survey[]>> {
     return await this.surveyService.findAll(query);
+  }
+
+  @Get('popular')
+  @ApiOperation({ summary: '인기 설문 조회 API' })
+  @ApiOkResponse({
+    type: [Survey],
+  })
+  async findPopular(@Query() query: FindPopularSurveyDto) {
+    return await this.surveyService.findPopular(query);
   }
 
   @Get(':_id')
