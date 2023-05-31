@@ -1,8 +1,8 @@
+import { ABQuestionResponseDto } from '@/survey/dto/ab-question-response.dto';
+import { QuestionResponseDto } from '@/survey/dto/question-response.dto';
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
-import { ABQuestion } from '@/schema/ab-question.schema';
-import { Question } from '@/schema/question.schema';
 import { AnswerService } from '@/answer/service/answer.service';
 import { User } from '@/common/decorator/user.decorator';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
@@ -51,7 +51,7 @@ export class MyPageController {
 
   @Get('surveys')
   @ApiOperation({ summary: '나의 설문 목록 조회 API' })
-  @ApiExtraModels(Question, ABQuestion)
+  @ApiExtraModels(QuestionResponseDto, ABQuestionResponseDto)
   @PaginationResponse(SurveyResponseDto)
   findMySurveys(
     @User() user: UserResponseDto,

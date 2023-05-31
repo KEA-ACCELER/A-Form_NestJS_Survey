@@ -1,3 +1,5 @@
+import { ABQuestionResponseDto } from '@/survey/dto/ab-question-response.dto';
+import { QuestionResponseDto } from '@/survey/dto/question-response.dto';
 import {
   NormalStatisticsResponseDto,
   SurveyStatisticsResponseDto,
@@ -36,10 +38,8 @@ import { PaginationResponse } from '@/common/decorator/pagination-response.decor
 import { AuthGuard } from '@/common/guard/auth.guard';
 import { User } from '@/common/decorator/user.decorator';
 import { AnswerService } from '@/answer/service/answer.service';
-import { Question } from '@/schema/question.schema';
-import { ABQuestion } from '@/schema/ab-question.schema';
-import { CreateABQuestionRequestDto } from '../dto/create-abquestion-request.dto';
-import { CreateQuestionRequestDto } from '../dto/create-question-request.dto';
+import { CreateABQuestionRequestDto } from '@/survey/dto/create-abquestion-request.dto';
+import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
 import { SurveyResponseDto } from '../dto/survey-response.dto';
 
 @ApiTags('surveys')
@@ -67,7 +67,7 @@ export class SurveyController {
 
   @Get()
   @ApiOperation({ summary: '설문 전체 조회 API' })
-  @ApiExtraModels(Question, ABQuestion)
+  @ApiExtraModels(QuestionResponseDto, ABQuestionResponseDto)
   @PaginationResponse(SurveyResponseDto)
   async findAll(
     @Query() query: FindSurveyDto,
@@ -81,7 +81,7 @@ export class SurveyController {
     type: String,
   })
   @ApiOperation({ summary: '설문 상세 조회 API' })
-  @ApiExtraModels(Question, ABQuestion)
+  @ApiExtraModels(QuestionResponseDto, ABQuestionResponseDto)
   @ApiOkResponse({
     type: SurveyResponseDto,
   })
