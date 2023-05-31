@@ -1,3 +1,5 @@
+import { TransformHelper as SurveyTransformHelper } from '@/survey/helper/transform.helper';
+import { TransformHelper as AnswerTransformHelper } from '@/answer/helper/transform.helper';
 import { PageDto } from '@/common/dto/page.dto';
 import { Question } from '@/schema/question.schema';
 import {
@@ -17,12 +19,16 @@ import { SurveyService } from '@/survey/service/survey.service';
 import { SurveyType, ABSurvey } from '@/common/constant/enum';
 import { Survey } from '@/schema/survey.schema';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
+import { AnswerResponseDto } from '@/survey/dto/answer-response.dto';
+import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
 
 @Injectable()
 export class AnswerService {
   constructor(
     @InjectModel(Answer.name) private answerModel: Model<Answer>,
     private surveyService: SurveyService,
+    private surveyTransformHelper: SurveyTransformHelper,
+    private answerTransformHelper: AnswerTransformHelper,
   ) {}
 
   async checkUserAnswer(
@@ -60,11 +66,11 @@ export class AnswerService {
   async findMyAnswerBySurvey(
     author: string,
     survey: Types.ObjectId,
-  ): Promise<Answer> {
+  ): Promise<AnswerResponseDto> {
     const result = await this.checkUserAnswer(author, survey);
     if (!result) throw new BadRequestException(ErrorMessage.NOT_FOUND);
 
-    return result;
+    return this.answerTransformHelper.toResponseDto(result);
   }
 
   async findOneStatistics(
@@ -195,7 +201,7 @@ export class AnswerService {
   async finyMyAnsweredSurvey(
     userId: string,
     query: BaseQueryDto,
-  ): Promise<PageDto<Survey[]>> {
+  ): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
     const total = await this.answerModel.find({ author: userId }).count();
@@ -218,6 +224,11 @@ export class AnswerService {
       }),
     );
 
-    return new PageDto(page, offset, total, data);
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.surveyTransformHelper.toArrayResponseDto(data),
+    );
   }
 }
