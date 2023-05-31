@@ -1,9 +1,9 @@
 import {
-  NormalStatistics,
-  SurveyStatistics,
-  ABStatistics,
+  NormalStatisticsResponseDto,
+  SurveyStatisticsResponseDto,
+  ABStatisticsResponseDto,
   NormalStatisticsValue,
-} from '@/survey/dto/survey-statistics.dto';
+} from '@/survey/dto/survey-statistics-response.dto';
 import { UserResponseDto } from '@/common/dto/user-response.dto';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
 import { Types } from 'mongoose';
@@ -31,7 +31,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Survey } from '@/schema/survey.schema';
 import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
 import { AuthGuard } from '@/common/guard/auth.guard';
@@ -41,6 +40,7 @@ import { Question } from '@/schema/question.schema';
 import { ABQuestion } from '@/schema/ab-question.schema';
 import { CreateABQuestionRequestDto } from '../dto/create-abquestion-request.dto';
 import { CreateQuestionRequestDto } from '../dto/create-question-request.dto';
+import { SurveyResponseDto } from '../dto/survey-response.dto';
 
 @ApiTags('surveys')
 @Controller('surveys')
@@ -68,8 +68,10 @@ export class SurveyController {
   @Get()
   @ApiOperation({ summary: '설문 전체 조회 API' })
   @ApiExtraModels(Question, ABQuestion)
-  @PaginationResponse(Survey)
-  async findAll(@Query() query: FindSurveyDto): Promise<PageDto<Survey[]>> {
+  @PaginationResponse(SurveyResponseDto)
+  async findAll(
+    @Query() query: FindSurveyDto,
+  ): Promise<PageDto<SurveyResponseDto[]>> {
     return await this.surveyService.findAll(query);
   }
 
@@ -81,11 +83,11 @@ export class SurveyController {
   @ApiOperation({ summary: '설문 상세 조회 API' })
   @ApiExtraModels(Question, ABQuestion)
   @ApiOkResponse({
-    type: Survey,
+    type: SurveyResponseDto,
   })
   async findOne(
     @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
-  ): Promise<Survey> {
+  ): Promise<SurveyResponseDto> {
     return await this.surveyService.findOne(_id);
   }
 
@@ -95,13 +97,17 @@ export class SurveyController {
     type: String,
   })
   @ApiOperation({ summary: '설문 통계 조회 API' })
-  @ApiExtraModels(NormalStatistics, ABStatistics, NormalStatisticsValue)
+  @ApiExtraModels(
+    NormalStatisticsResponseDto,
+    ABStatisticsResponseDto,
+    NormalStatisticsValue,
+  )
   @ApiOkResponse({
-    type: SurveyStatistics,
+    type: SurveyStatisticsResponseDto,
   })
   async findOneStatistics(
     @Param('_id', ParseObjectIdPipe) _id: Types.ObjectId,
-  ): Promise<SurveyStatistics> {
+  ): Promise<SurveyStatisticsResponseDto> {
     return await this.answerService.findOneStatistics(_id);
   }
 

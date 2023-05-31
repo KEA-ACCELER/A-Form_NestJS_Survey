@@ -1,11 +1,11 @@
 import { PageDto } from '@/common/dto/page.dto';
 import { Question } from '@/schema/question.schema';
 import {
-  SurveyStatistics,
-  NormalStatistics,
-  ABStatistics,
+  SurveyStatisticsResponseDto,
+  NormalStatisticsResponseDto,
+  ABStatisticsResponseDto,
   NormalStatisticsValue,
-} from '@/survey/dto/survey-statistics.dto';
+} from '@/survey/dto/survey-statistics-response.dto';
 import { ErrorMessage } from '@/common/constant/error-message';
 // import { CacheHelper } from '@/answer/helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
@@ -67,7 +67,9 @@ export class AnswerService {
     return result;
   }
 
-  async findOneStatistics(survey: Types.ObjectId): Promise<SurveyStatistics> {
+  async findOneStatistics(
+    survey: Types.ObjectId,
+  ): Promise<SurveyStatisticsResponseDto> {
     const totalCnt = await this.answerModel.countDocuments({
       survey,
     });
@@ -88,7 +90,7 @@ export class AnswerService {
       }
     }
 
-    return new SurveyStatistics(totalCnt, surveyType, statistics);
+    return new SurveyStatisticsResponseDto(totalCnt, surveyType, statistics);
   }
 
   // TODO: 현재는 shortform도 요약해버리기 때문에 refactoring 필요
@@ -98,7 +100,7 @@ export class AnswerService {
   async findNormalSurveyStatistics(
     survey: Types.ObjectId,
     totalCnt: number,
-  ): Promise<NormalStatistics[]> {
+  ): Promise<NormalStatisticsResponseDto[]> {
     const statistics = await this.answerModel.aggregate([
       { $match: { survey } },
       { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
@@ -138,14 +140,15 @@ export class AnswerService {
     });
 
     return statistics.map(
-      (item) => new NormalStatistics(item.index, item.type, item.values),
+      (item) =>
+        new NormalStatisticsResponseDto(item.index, item.type, item.values),
     );
   }
 
   async findABSurveyStatistics(
     survey: Types.ObjectId,
     totalCnt: number,
-  ): Promise<ABStatistics[]> {
+  ): Promise<ABStatisticsResponseDto[]> {
     let statistics = await this.answerModel.aggregate([
       { $match: { survey } },
       {
@@ -169,22 +172,23 @@ export class AnswerService {
 
     if (statistics.length === 0) {
       statistics = [
-        new ABStatistics(ABSurvey.A, 0, 0),
-        new ABStatistics(ABSurvey.B, 0, 0),
+        new ABStatisticsResponseDto(ABSurvey.A, 0, 0),
+        new ABStatisticsResponseDto(ABSurvey.B, 0, 0),
       ];
     } else if (statistics.length === 1) {
       switch (statistics[0].type) {
         case ABSurvey.A:
-          statistics.push(new ABStatistics(ABSurvey.B, 0, 0));
+          statistics.push(new ABStatisticsResponseDto(ABSurvey.B, 0, 0));
           break;
         case ABSurvey.B:
-          statistics.push(new ABStatistics(ABSurvey.A, 0, 0));
+          statistics.push(new ABStatisticsResponseDto(ABSurvey.A, 0, 0));
           break;
       }
     }
 
     return statistics.map(
-      (item) => new ABStatistics(item.type, item.count, item.percent),
+      (item) =>
+        new ABStatisticsResponseDto(item.type, item.count, item.percent),
     );
   }
 
