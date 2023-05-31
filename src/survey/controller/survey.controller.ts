@@ -42,7 +42,6 @@ import { CreateABQuestionRequestDto } from '@/survey/dto/create-abquestion-reque
 import { CreateQuestionRequestDto } from '@/survey/dto/create-question-request.dto';
 import { FindPopularSurveyDto } from '@/survey/dto/find-popular-survey.dto';
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
-import { Survey } from '@/schema/survey.schema';
 
 @ApiTags('surveys')
 @Controller('surveys')
@@ -80,7 +79,7 @@ export class SurveyController {
   @Get('popular')
   @ApiOperation({ summary: '인기 설문 조회 API' })
   @ApiOkResponse({
-    type: [Survey],
+    type: [SurveyResponseDto],
   })
   async findPopular(@Query() query: FindPopularSurveyDto) {
     return await this.surveyService.findPopular(query);

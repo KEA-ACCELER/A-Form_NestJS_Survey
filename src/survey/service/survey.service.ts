@@ -171,7 +171,7 @@ export class SurveyService {
 
   // 인기글은 입력받은 시간의 한 시간 전 가장 응답이 많은 순 5개
   // 만일 응답이 많은 survey가 5개가 없다면 그 시간대의 글을 오래된 순으로
-  async findPopular(query: FindPopularSurveyDto): Promise<Survey[]> {
+  async findPopular(query: FindPopularSurveyDto): Promise<SurveyResponseDto[]> {
     const [startTime, endTime] =
       this.popularSurveyHelper.getResponseTimeRange(query);
 
@@ -202,6 +202,6 @@ export class SurveyService {
       popularSurvey.push(...surveyAtThatTime);
     }
 
-    return popularSurvey;
+    return this.transformHelper.toArrayResponseDto(popularSurvey);
   }
 }
