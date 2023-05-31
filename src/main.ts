@@ -11,6 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
+  // TODO: transformOptions 제거 필요
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
