@@ -13,12 +13,15 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
+import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
+import { TransformHelper } from '@/survey/helper/transform.helper';
 
 @Injectable()
 export class SurveyService {
   constructor(
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
     private queryHelper: QueryHelper,
+    private transformHelper: TransformHelper,
   ) {}
 
   async create(
@@ -33,7 +36,7 @@ export class SurveyService {
     )._id.toString();
   }
 
-  async findAll(query: FindSurveyDto): Promise<PageDto<Survey[]>> {
+  async findAll(query: FindSurveyDto): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
     const sortQuery: { [key: string]: SortOrder } = query?.sort
@@ -60,17 +63,22 @@ export class SurveyService {
       .limit(offset)
       .sort(sortQuery);
 
-    return new PageDto(page, offset, total, data);
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.transformHelper.toArrayResponseDto(data),
+    );
   }
 
-  async findOne(_id: Types.ObjectId): Promise<Survey> {
+  async findOne(_id: Types.ObjectId): Promise<SurveyResponseDto> {
     const survey = await this.surveyModel.findOne({
       _id,
       status: Status.NORMAL,
     });
     if (!survey) throw new NotFoundException(ErrorMessage.NOT_FOUND);
 
-    return survey;
+    return this.transformHelper.toResponseDto(survey);
   }
 
   async update(
@@ -120,7 +128,7 @@ export class SurveyService {
   async findMySurveys(
     author: string,
     query: FindSurveyDto,
-  ): Promise<PageDto<Survey[]>> {
+  ): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
     const sortQuery: { [key: string]: SortOrder } = query?.sort
@@ -148,6 +156,11 @@ export class SurveyService {
       .limit(offset)
       .sort(sortQuery);
 
-    return new PageDto(page, offset, total, data);
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.transformHelper.toArrayResponseDto(data),
+    );
   }
 }

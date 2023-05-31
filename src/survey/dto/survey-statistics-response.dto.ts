@@ -27,7 +27,7 @@ export class NormalStatisticsValue {
   }
 }
 
-export class NormalStatistics {
+export class NormalStatisticsResponseDto {
   @ApiProperty({
     type: Number,
   })
@@ -56,7 +56,7 @@ export class NormalStatistics {
   }
 }
 
-export class ABStatistics {
+export class ABStatisticsResponseDto {
   @ApiProperty({
     enum: ABSurvey,
   })
@@ -82,7 +82,7 @@ export class ABStatistics {
   }
 }
 
-export class SurveyStatistics {
+export class SurveyStatisticsResponseDto {
   @ApiProperty({
     type: Number,
   })
@@ -100,17 +100,17 @@ export class SurveyStatistics {
     type: 'array',
     items: {
       oneOf: [
-        { $ref: getSchemaPath(ABStatistics) },
-        { $ref: getSchemaPath(NormalStatistics) },
+        { $ref: getSchemaPath(ABStatisticsResponseDto) },
+        { $ref: getSchemaPath(NormalStatisticsResponseDto) },
       ],
     },
   })
-  statistics: NormalStatistics[] | ABStatistics[];
+  statistics: NormalStatisticsResponseDto[] | ABStatisticsResponseDto[];
 
   constructor(
     totalCnt: number,
     type: SurveyType,
-    statistics: NormalStatistics[] | ABStatistics[],
+    statistics: NormalStatisticsResponseDto[] | ABStatisticsResponseDto[],
   ) {
     this.totalCnt = totalCnt;
     this.type = type;

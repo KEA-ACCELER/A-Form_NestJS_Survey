@@ -1,3 +1,4 @@
+import { TransformHelper } from '@/survey/helper/transform.helper';
 import { AnswerModule } from '@/answer/answer.module';
 import { HttpModule } from '@nestjs/axios';
 import { QueryHelper } from '@/survey/helper/query.helper';
@@ -13,7 +14,7 @@ import { SurveyController } from '@/survey/controller/survey.controller';
     HttpModule,
     forwardRef(() => AnswerModule),
   ],
-  providers: [SurveyService, QueryHelper],
+  providers: [SurveyService, QueryHelper, TransformHelper],
   controllers: [SurveyController],
   exports: [SurveyService],
 })

@@ -1,11 +1,13 @@
+import { TransformHelper as SurveyTransformHelper } from '@/survey/helper/transform.helper';
+import { TransformHelper as AnswerTransformHelper } from '@/answer/helper/transform.helper';
 import { PageDto } from '@/common/dto/page.dto';
 import { Question } from '@/schema/question.schema';
 import {
-  SurveyStatistics,
-  NormalStatistics,
-  ABStatistics,
+  SurveyStatisticsResponseDto,
+  NormalStatisticsResponseDto,
+  ABStatisticsResponseDto,
   NormalStatisticsValue,
-} from '@/survey/dto/survey-statistics.dto';
+} from '@/survey/dto/survey-statistics-response.dto';
 import { ErrorMessage } from '@/common/constant/error-message';
 // import { CacheHelper } from '@/answer/helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
@@ -17,12 +19,16 @@ import { SurveyService } from '@/survey/service/survey.service';
 import { SurveyType, ABSurvey } from '@/common/constant/enum';
 import { Survey } from '@/schema/survey.schema';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
+import { AnswerResponseDto } from '@/survey/dto/answer-response.dto';
+import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
 
 @Injectable()
 export class AnswerService {
   constructor(
     @InjectModel(Answer.name) private answerModel: Model<Answer>,
     private surveyService: SurveyService,
+    private surveyTransformHelper: SurveyTransformHelper,
+    private answerTransformHelper: AnswerTransformHelper,
   ) {}
 
   async checkUserAnswer(
@@ -60,14 +66,16 @@ export class AnswerService {
   async findMyAnswerBySurvey(
     author: string,
     survey: Types.ObjectId,
-  ): Promise<Answer> {
+  ): Promise<AnswerResponseDto> {
     const result = await this.checkUserAnswer(author, survey);
     if (!result) throw new BadRequestException(ErrorMessage.NOT_FOUND);
 
-    return result;
+    return this.answerTransformHelper.toResponseDto(result);
   }
 
-  async findOneStatistics(survey: Types.ObjectId): Promise<SurveyStatistics> {
+  async findOneStatistics(
+    survey: Types.ObjectId,
+  ): Promise<SurveyStatisticsResponseDto> {
     const totalCnt = await this.answerModel.countDocuments({
       survey,
     });
@@ -88,7 +96,7 @@ export class AnswerService {
       }
     }
 
-    return new SurveyStatistics(totalCnt, surveyType, statistics);
+    return new SurveyStatisticsResponseDto(totalCnt, surveyType, statistics);
   }
 
   // TODO: 현재는 shortform도 요약해버리기 때문에 refactoring 필요
@@ -98,7 +106,7 @@ export class AnswerService {
   async findNormalSurveyStatistics(
     survey: Types.ObjectId,
     totalCnt: number,
-  ): Promise<NormalStatistics[]> {
+  ): Promise<NormalStatisticsResponseDto[]> {
     const statistics = await this.answerModel.aggregate([
       { $match: { survey } },
       { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
@@ -138,14 +146,15 @@ export class AnswerService {
     });
 
     return statistics.map(
-      (item) => new NormalStatistics(item.index, item.type, item.values),
+      (item) =>
+        new NormalStatisticsResponseDto(item.index, item.type, item.values),
     );
   }
 
   async findABSurveyStatistics(
     survey: Types.ObjectId,
     totalCnt: number,
-  ): Promise<ABStatistics[]> {
+  ): Promise<ABStatisticsResponseDto[]> {
     let statistics = await this.answerModel.aggregate([
       { $match: { survey } },
       {
@@ -169,29 +178,30 @@ export class AnswerService {
 
     if (statistics.length === 0) {
       statistics = [
-        new ABStatistics(ABSurvey.A, 0, 0),
-        new ABStatistics(ABSurvey.B, 0, 0),
+        new ABStatisticsResponseDto(ABSurvey.A, 0, 0),
+        new ABStatisticsResponseDto(ABSurvey.B, 0, 0),
       ];
     } else if (statistics.length === 1) {
       switch (statistics[0].type) {
         case ABSurvey.A:
-          statistics.push(new ABStatistics(ABSurvey.B, 0, 0));
+          statistics.push(new ABStatisticsResponseDto(ABSurvey.B, 0, 0));
           break;
         case ABSurvey.B:
-          statistics.push(new ABStatistics(ABSurvey.A, 0, 0));
+          statistics.push(new ABStatisticsResponseDto(ABSurvey.A, 0, 0));
           break;
       }
     }
 
     return statistics.map(
-      (item) => new ABStatistics(item.type, item.count, item.percent),
+      (item) =>
+        new ABStatisticsResponseDto(item.type, item.count, item.percent),
     );
   }
 
   async finyMyAnsweredSurvey(
     userId: string,
     query: BaseQueryDto,
-  ): Promise<PageDto<Survey[]>> {
+  ): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
     const total = await this.answerModel.find({ author: userId }).count();
@@ -214,6 +224,11 @@ export class AnswerService {
       }),
     );
 
-    return new PageDto(page, offset, total, data);
+    return new PageDto(
+      page,
+      offset,
+      total,
+      this.surveyTransformHelper.toArrayResponseDto(data),
+    );
   }
 }
