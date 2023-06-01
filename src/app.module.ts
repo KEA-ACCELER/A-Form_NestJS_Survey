@@ -7,6 +7,8 @@ import { AnswerModule } from '@/answer/answer.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MyPageModule } from '@/my-page/my-page.module';
 import * as redisStore from 'cache-manager-ioredis';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BatchModule } from '@/batch/batch.module';
 
 @Module({
   imports: [
@@ -36,10 +38,12 @@ import * as redisStore from 'cache-manager-ioredis';
         };
       },
     }),
+    ScheduleModule.forRoot(),
     SurveyModule,
     FileModule,
     AnswerModule,
     MyPageModule,
+    BatchModule,
   ],
 })
 export class AppModule {}
