@@ -37,3 +37,8 @@ export enum ABSurvey {
   A = 'A',
   B = 'B',
 }
+
+export enum PopularSurveyResponseType {
+  ID = 'id',
+  OBJECT = 'object',
+}

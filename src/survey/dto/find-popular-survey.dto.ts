@@ -1,6 +1,7 @@
+import { PopularSurveyResponseType } from '@/common/constant/enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsDate } from 'class-validator';
+import { IsDate, IsString } from 'class-validator';
 import moment from 'moment-timezone';
 
 export class FindPopularSurveyDto {
@@ -11,7 +12,14 @@ export class FindPopularSurveyDto {
   @IsDate()
   date: Date;
 
-  constructor(date: Date) {
+  @ApiProperty({
+    enum: PopularSurveyResponseType,
+  })
+  @IsString()
+  type: PopularSurveyResponseType;
+
+  constructor(date: Date, type: PopularSurveyResponseType) {
     this.date = date;
+    this.type = type;
   }
 }

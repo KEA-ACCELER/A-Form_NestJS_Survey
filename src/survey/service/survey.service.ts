@@ -4,7 +4,7 @@ import { ErrorMessage } from '@/common/constant/error-message';
 import { QueryHelper } from '@/survey/helper/query.helper';
 import { PageDto } from '@/common/dto/page.dto';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
-import { Status } from '@/common/constant/enum';
+import { PopularSurveyResponseType, Status } from '@/common/constant/enum';
 import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
 import {
@@ -171,7 +171,9 @@ export class SurveyService {
 
   // 인기글은 입력받은 시간의 한 시간 전 가장 응답이 많은 순 5개
   // 만일 응답이 많은 survey가 5개가 없다면 그 시간대의 글을 오래된 순으로
-  async findPopular(query: FindPopularSurveyDto): Promise<SurveyResponseDto[]> {
+  async findPopular(
+    query: FindPopularSurveyDto,
+  ): Promise<SurveyResponseDto[] | string[]> {
     const [startTime, endTime] =
       this.popularSurveyHelper.getResponseTimeRange(query);
 
@@ -202,6 +204,8 @@ export class SurveyService {
       popularSurvey.push(...surveyAtThatTime);
     }
 
-    return this.transformHelper.toArrayResponseDto(popularSurvey);
+    return query.type === PopularSurveyResponseType.OBJECT
+      ? this.transformHelper.toArrayResponseDto(popularSurvey)
+      : popularSurvey.map((item) => item._id);
   }
 }

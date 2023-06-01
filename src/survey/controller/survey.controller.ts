@@ -32,6 +32,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { PageDto } from '@/common/dto/page.dto';
 import { PaginationResponse } from '@/common/decorator/pagination-response.decorator';
@@ -79,7 +80,12 @@ export class SurveyController {
   @Get('popular')
   @ApiOperation({ summary: '인기 설문 조회 API' })
   @ApiOkResponse({
-    type: [SurveyResponseDto],
+    schema: {
+      oneOf: [
+        { type: 'array', items: { $ref: getSchemaPath(SurveyResponseDto) } },
+        { type: 'array', items: { type: 'string' } },
+      ],
+    },
   })
   async findPopular(@Query() query: FindPopularSurveyDto) {
     return await this.surveyService.findPopular(query);
