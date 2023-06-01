@@ -11,6 +11,7 @@ export class Answer {
 
   @Prop({
     type: Types.ObjectId,
+    ref: 'Survey',
   })
   survey: Types.ObjectId;
 
