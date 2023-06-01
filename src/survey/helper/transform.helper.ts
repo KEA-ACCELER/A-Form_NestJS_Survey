@@ -1,5 +1,6 @@
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
 import { Survey } from '@/schema/survey.schema';
+import moment from 'moment-timezone';
 
 export class TransformHelper {
   toArrayResponseDto = (data: Survey[]): SurveyResponseDto[] => {
@@ -20,8 +21,8 @@ export class TransformHelper {
         title,
         author,
         questions,
-        createdAt,
-        updatedAt,
+        createdAt: moment.utc(createdAt).tz('Asia/Seoul').format(),
+        updatedAt: moment.utc(updatedAt).tz('Asia/Seoul').format(),
         status,
         description,
       }),
@@ -47,8 +48,8 @@ export class TransformHelper {
       title,
       author,
       questions,
-      createdAt,
-      updatedAt,
+      createdAt: moment.utc(createdAt).tz('Asia/Seoul').format(),
+      updatedAt: moment.utc(updatedAt).tz('Asia/Seoul').format(),
       status,
       description,
     };

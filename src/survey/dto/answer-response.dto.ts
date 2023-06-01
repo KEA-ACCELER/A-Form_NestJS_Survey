@@ -18,14 +18,14 @@ export class AnswerResponseDto {
   author: string;
 
   @ApiProperty({
-    type: Date,
+    type: String,
   })
-  createdAt: Date;
+  createdAt: string;
 
   @ApiProperty({
-    type: Date,
+    type: String,
   })
-  updatedAt: Date;
+  updatedAt: string;
 
   @ApiProperty({
     type: 'array',
@@ -45,8 +45,8 @@ export class AnswerResponseDto {
     _id: Types.ObjectId,
     survey: Types.ObjectId,
     author: string,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: string,
+    updatedAt: string,
     answers: [string | number][] | string,
   ) {
     this._id = _id;
