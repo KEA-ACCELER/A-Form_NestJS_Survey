@@ -17,10 +17,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SurveyService } from '@/survey/service/survey.service';
 import { SurveyType, ABSurvey } from '@/common/constant/enum';
-import { Survey } from '@/schema/survey.schema';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { AnswerResponseDto } from '@/survey/dto/answer-response.dto';
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
+import { Survey } from '@/schema/survey.schema';
 
 @Injectable()
 export class AnswerService {
@@ -206,29 +206,22 @@ export class AnswerService {
 
     const total = await this.answerModel.find({ author: userId }).count();
 
-    const surveys = (
-      await this.answerModel
-        .find({
-          author: userId,
-        })
-        .skip((page - 1) * offset)
-        .limit(offset)
-        .sort('-createdAt')
-        .select('survey')
-    ).map((item) => item.survey);
-
-    const data: Survey[] = [];
-    await Promise.all(
-      surveys.map(async (survey) => {
-        data.push(await this.surveyService.findOne(survey));
-      }),
-    );
+    const data = await this.answerModel
+      .find({
+        author: userId,
+      })
+      .skip((page - 1) * offset)
+      .limit(offset)
+      .sort('-createdAt')
+      .populate<{ survey: Survey }>('survey');
 
     return new PageDto(
       page,
       offset,
       total,
-      this.surveyTransformHelper.toArrayResponseDto(data),
+      this.surveyTransformHelper.toArrayResponseDto(
+        data.map((item) => item.survey),
+      ),
     );
   }
 }
