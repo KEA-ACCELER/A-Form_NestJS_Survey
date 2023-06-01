@@ -41,14 +41,14 @@ export class SurveyResponseDto {
   questions: QuestionResponseDto[] | ABQuestionResponseDto[];
 
   @ApiProperty({
-    type: Date,
+    type: String,
   })
-  createdAt: Date;
+  createdAt: string;
 
   @ApiProperty({
-    type: Date,
+    type: String,
   })
-  updatedAt: Date;
+  updatedAt: string;
 
   @ApiProperty({
     enum: Status,
@@ -66,8 +66,8 @@ export class SurveyResponseDto {
     title: string,
     author: string,
     questions: QuestionResponseDto[] | ABQuestionResponseDto[],
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: string,
+    updatedAt: string,
     status: Status,
     description?: string,
   ) {

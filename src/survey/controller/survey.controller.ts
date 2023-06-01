@@ -87,7 +87,9 @@ export class SurveyController {
       ],
     },
   })
-  async findPopular(@Query() query: FindPopularSurveyDto) {
+  async findPopular(
+    @Query() query: FindPopularSurveyDto,
+  ): Promise<SurveyResponseDto[] | string[]> {
     return await this.surveyService.findPopular(query);
   }
 
