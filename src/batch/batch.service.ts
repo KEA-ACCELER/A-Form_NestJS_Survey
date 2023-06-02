@@ -1,3 +1,4 @@
+import { PopularSurveyResponseType } from '@/common/constant/enum';
 import { SurveyService } from '@/survey/service/survey.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -19,9 +20,8 @@ export class BatchService {
 
     const popularSurvey = await this.surveyService.findPopular({
       date: currentTime,
+      type: PopularSurveyResponseType.ID,
     });
-
-    const popularSurveyIds = popularSurvey.map((item) => item._id);
 
     //TODO: redis에 적재
   }

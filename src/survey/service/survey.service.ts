@@ -179,7 +179,8 @@ export class SurveyService {
 
     const popularSurvey = await this.answerModel.aggregate([
       { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
-      { $group: { _id: '$survey' } },
+      { $group: { _id: '$survey', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
       { $limit: 5 },
     ]);
 
