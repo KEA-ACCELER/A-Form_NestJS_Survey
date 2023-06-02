@@ -177,16 +177,23 @@ export class SurveyService {
     const [startTime, endTime] =
       this.popularSurveyHelper.getResponseTimeRange(query);
 
-    const popularSurvey = await this.answerModel.aggregate([
-      { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
-      { $group: { _id: '$survey', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 5 },
-    ]);
+    const popularSurvey: { _id: string; count: number }[] =
+      await this.answerModel.aggregate([
+        { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
+        { $group: { _id: '$survey', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+      ]);
 
     const popularSurveyIds = popularSurvey.map((item) => item._id);
 
-    if (popularSurvey.length !== 5) {
+    const result = (await Promise.all(
+      popularSurveyIds.map(
+        async (item) => await this.surveyModel.findOne({ _id: item }),
+      ),
+    )) as Survey[];
+
+    if (result.length !== 5) {
       const surveyAtThatTime = await this.surveyModel
         .find({
           createdAt: {
@@ -202,11 +209,11 @@ export class SurveyService {
         })
         .limit(5 - popularSurvey.length);
 
-      popularSurvey.push(...surveyAtThatTime);
+      result.push(...surveyAtThatTime);
     }
 
     return query.type === PopularSurveyResponseType.OBJECT
-      ? this.transformHelper.toArrayResponseDto(popularSurvey)
-      : popularSurvey.map((item) => item._id);
+      ? this.transformHelper.toArrayResponseDto(result)
+      : popularSurveyIds;
   }
 }

@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 export class FindPopularSurveyDto {
   @ApiProperty({
     type: Date,
+    example: '2023-06-01T20:14:40+09:00',
   })
   @Transform(({ value }) => moment.tz(value, 'Asia/Seoul').utc().toDate())
   @IsDate()
