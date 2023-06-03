@@ -1,4 +1,4 @@
-import { RedisConfigService } from './cache/cache.config';
+import { CacheConfigService } from '@/cache/cache.config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -29,7 +29,7 @@ import { CacheModule } from './cache/cache.module';
     }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
-      useClass: RedisConfigService,
+      useClass: CacheConfigService,
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),

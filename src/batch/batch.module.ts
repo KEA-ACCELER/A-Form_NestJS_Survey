@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { QueryHelper } from '@/survey/helper/query.helper';
 import { PopularSurveyHelper } from '@/survey/helper/popular-survey.helper';
 import { TransformHelper } from '@/survey/helper/transform.helper';
+import { CacheModule } from '@/cache/cache.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TransformHelper } from '@/survey/helper/transform.helper';
       { name: Survey.name, schema: SurveySchema },
       { name: Answer.name, schema: AnswerSchema },
     ]),
+    CacheModule,
   ],
   providers: [
     BatchService,
