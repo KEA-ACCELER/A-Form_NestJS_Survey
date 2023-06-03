@@ -9,7 +9,6 @@ import {
   NormalStatisticsValue,
 } from '@/survey/dto/survey-statistics-response.dto';
 import { ErrorMessage } from '@/common/constant/error-message';
-// import { CacheHelper } from '@/answer/helper/cache.helper';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { Answer } from '@/schema/answer.schema';
 import { Injectable, BadRequestException } from '@nestjs/common';
@@ -51,8 +50,6 @@ export class AnswerService {
     }
 
     // TODO: redis 로직 확인
-    // await this.cacheHelper.incrementTotalCount(survey.toString());
-    // await this.cacheHelper.updateAnswer(survey, requestDto.answers);
 
     return (
       await this.answerModel.create({
