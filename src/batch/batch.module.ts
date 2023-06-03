@@ -1,3 +1,4 @@
+import { KeyHelper } from '@/cache/helper/key.helper';
 import { SurveyService } from '@/survey/service/survey.service';
 import { Module } from '@nestjs/common';
 import { BatchService } from '@/batch/batch.service';
@@ -23,6 +24,7 @@ import { CacheModule } from '@/cache/cache.module';
     QueryHelper,
     PopularSurveyHelper,
     TransformHelper,
+    KeyHelper,
   ],
 })
 export class BatchModule {}

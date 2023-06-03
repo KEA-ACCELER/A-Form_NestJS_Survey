@@ -37,7 +37,7 @@ async function bootstrap() {
   }
 
   app.enableCors();
-  app.enableShutdownHooks();
+  // app.enableShutdownHooks();
 
   const configService = app.get(ConfigService);
   await app.listen(configService.get('PORT') || 3000);
