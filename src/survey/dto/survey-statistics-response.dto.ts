@@ -35,24 +35,24 @@ export class NormalStatisticsResponseDto {
   index: number;
 
   @ApiProperty({
-    enum: QuestionType,
-  })
-  type: QuestionType;
-
-  @ApiProperty({
     isArray: true,
     type: NormalStatisticsValue,
   })
-  values: NormalStatisticsValue;
+  values: NormalStatisticsValue[];
+
+  @ApiProperty({
+    enum: QuestionType,
+  })
+  type?: QuestionType;
 
   constructor(
     index: number,
-    type: QuestionType,
-    values: NormalStatisticsValue,
+    values: NormalStatisticsValue[],
+    type?: QuestionType,
   ) {
     this.index = index;
-    this.type = type;
     this.values = values;
+    this.type = type;
   }
 }
 
