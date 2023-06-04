@@ -1,3 +1,4 @@
+import { SurveyRepository } from '@/survey/repository/survey.repository';
 import { KeyHelper } from '@/cache/helper/key.helper';
 import { SurveyService } from '@/survey/service/survey.service';
 import { Module } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { CacheModule } from '@/cache/cache.module';
   providers: [
     BatchService,
     SurveyService,
+    SurveyRepository,
     QueryHelper,
     PopularSurveyHelper,
     TransformHelper,
