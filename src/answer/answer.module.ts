@@ -1,3 +1,4 @@
+import { AnswerRepository } from './repository/answer.repository';
 import { ValidateAnswerPipe } from '@/answer/pipe/validate-answer.pipe';
 import { SurveyCheckHelper } from './helper/survey-check.helper';
 import { HttpModule } from '@nestjs/axios';
@@ -23,6 +24,7 @@ import { TransformHelper as AnswerTransformHelper } from '@/answer/helper/transf
     ValidateAnswerPipe,
     SurveyTransformHelper,
     AnswerTransformHelper,
+    AnswerRepository,
   ],
   exports: [AnswerService],
 })

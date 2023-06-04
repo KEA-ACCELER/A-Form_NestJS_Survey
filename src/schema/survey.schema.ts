@@ -2,7 +2,7 @@ import { ABQuestion } from '@/schema/ab-question.schema';
 import { Question } from '@/schema/question.schema';
 import { Status, SurveyType } from '@/common/constant/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type SurveyDocument = HydratedDocument<Survey>;
 
@@ -10,7 +10,7 @@ export type SurveyDocument = HydratedDocument<Survey>;
   timestamps: true,
 })
 export class Survey {
-  _id: string;
+  _id: Types.ObjectId;
 
   @Prop({ type: String, enum: SurveyType, required: true })
   type: SurveyType;
@@ -50,7 +50,7 @@ export class Survey {
   description?: string;
 
   constructor(
-    _id: string,
+    _id: Types.ObjectId,
     type: SurveyType,
     title: string,
     author: string,

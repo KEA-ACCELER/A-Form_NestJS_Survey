@@ -1,3 +1,4 @@
+import { AnswerRepository } from '@/answer/repository/answer.repository';
 import { TransformHelper as SurveyTransformHelper } from '@/survey/helper/transform.helper';
 import { TransformHelper as AnswerTransformHelper } from '@/answer/helper/transform.helper';
 import { PageDto } from '@/common/dto/page.dto';
@@ -10,61 +11,42 @@ import {
 } from '@/survey/dto/survey-statistics-response.dto';
 import { ErrorMessage } from '@/common/constant/error-message';
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
-import { Answer } from '@/schema/answer.schema';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { SurveyService } from '@/survey/service/survey.service';
 import { SurveyType, ABSurvey } from '@/common/constant/enum';
 import { BaseQueryDto } from '@/common/dto/base-query.dto';
 import { AnswerResponseDto } from '@/survey/dto/answer-response.dto';
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
-import { Survey } from '@/schema/survey.schema';
 
 @Injectable()
 export class AnswerService {
   constructor(
-    @InjectModel(Answer.name) private answerModel: Model<Answer>,
+    private answerRepository: AnswerRepository,
     private surveyService: SurveyService,
     private surveyTransformHelper: SurveyTransformHelper,
     private answerTransformHelper: AnswerTransformHelper,
   ) {}
-
-  async checkUserAnswer(
-    author: string,
-    survey: Types.ObjectId,
-  ): Promise<Answer | null> {
-    return await this.answerModel.findOne({
-      survey,
-      author,
-    });
-  }
 
   async create(
     author: string,
     survey: Types.ObjectId,
     requestDto: CreateAnswerRequestDto,
   ): Promise<string> {
-    if (await this.checkUserAnswer(author, survey)) {
+    if (await this.answerRepository.checkUserAnswer(author, survey)) {
       throw new BadRequestException(ErrorMessage.ALREADY_ANSWERED);
     }
 
-    // TODO: redis 로직 확인
-
     return (
-      await this.answerModel.create({
-        author,
-        survey,
-        ...requestDto,
-      })
-    )._id.toString();
+      await this.answerRepository.create(author, survey, requestDto)
+    ).toString();
   }
 
   async findMyAnswerBySurvey(
     author: string,
     survey: Types.ObjectId,
   ): Promise<AnswerResponseDto> {
-    const result = await this.checkUserAnswer(author, survey);
+    const result = await this.answerRepository.checkUserAnswer(author, survey);
     if (!result) throw new BadRequestException(ErrorMessage.NOT_FOUND);
 
     return this.answerTransformHelper.toResponseDto(result);
@@ -73,11 +55,8 @@ export class AnswerService {
   async findOneStatistics(
     survey: Types.ObjectId,
   ): Promise<SurveyStatisticsResponseDto> {
-    const totalCnt = await this.answerModel.countDocuments({
-      survey,
-    });
+    const totalCnt = await this.answerRepository.findAnswerCnt(survey);
 
-    // TODO: helper로 변경?
     const { type: surveyType } = await this.surveyService.findOne(survey);
 
     let statistics = [];
@@ -104,38 +83,15 @@ export class AnswerService {
     survey: Types.ObjectId,
     totalCnt: number,
   ): Promise<NormalStatisticsResponseDto[]> {
-    const statistics = await this.answerModel.aggregate([
-      { $match: { survey } },
-      { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
-      { $unwind: '$answers' },
-      {
-        $group: {
-          _id: { index: '$index', value: '$answers' },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: '$_id.index',
-          values: {
-            $push: { answer: { $toString: '$_id.value' }, count: '$count' },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          index: '$_id',
-          values: '$values',
-        },
-      },
-    ]);
+    const statistics = await this.answerRepository.findNormalSurveyStatistics(
+      survey,
+    );
 
     const { questions } = (await this.surveyService.findOne(survey)) as {
       questions: Question[];
     };
 
-    statistics.map((item, idx) => {
+    statistics.map((item: NormalStatisticsResponseDto, idx) => {
       item.type = questions[idx].type;
       item.values.map((value: NormalStatisticsValue) => {
         value.percent = Math.round((value.count / totalCnt) * 100);
@@ -144,7 +100,7 @@ export class AnswerService {
 
     return statistics.map(
       (item) =>
-        new NormalStatisticsResponseDto(item.index, item.type, item.values),
+        new NormalStatisticsResponseDto(item.index, item.values, item.type),
     );
   }
 
@@ -152,22 +108,7 @@ export class AnswerService {
     survey: Types.ObjectId,
     totalCnt: number,
   ): Promise<ABStatisticsResponseDto[]> {
-    let statistics = await this.answerModel.aggregate([
-      { $match: { survey } },
-      {
-        $group: {
-          _id: '$answers',
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          type: '$_id',
-          count: 1,
-        },
-      },
-    ]);
+    let statistics = await this.answerRepository.findABSurveyStatistics(survey);
 
     statistics.map((item) => {
       item.percent = Math.round((item.count / totalCnt) * 100);
@@ -201,16 +142,13 @@ export class AnswerService {
   ): Promise<PageDto<SurveyResponseDto[]>> {
     const { page, offset } = query;
 
-    const total = await this.answerModel.find({ author: userId }).count();
+    const total = await this.answerRepository.findMyAnsweredSurveyCnt(userId);
 
-    const data = await this.answerModel
-      .find({
-        author: userId,
-      })
-      .skip((page - 1) * offset)
-      .limit(offset)
-      .sort('-createdAt')
-      .populate<{ survey: Survey }>('survey');
+    const data = await this.answerRepository.findMyAnsweredSurvey(
+      userId,
+      page,
+      offset,
+    );
 
     return new PageDto(
       page,

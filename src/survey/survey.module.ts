@@ -1,3 +1,4 @@
+import { SurveyRepository } from '@/survey/repository/survey.repository';
 import { KeyHelper } from '@/cache/helper/key.helper';
 import { CacheModule } from '@/cache/cache.module';
 import { Answer, AnswerSchema } from '@/schema/answer.schema';
@@ -28,6 +29,7 @@ import { SurveyController } from '@/survey/controller/survey.controller';
     TransformHelper,
     PopularSurveyHelper,
     KeyHelper,
+    SurveyRepository,
   ],
   controllers: [SurveyController],
   exports: [SurveyService],

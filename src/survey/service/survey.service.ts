@@ -1,6 +1,5 @@
 import { KeyHelper } from '@/cache/helper/key.helper';
 import { CacheService } from '@/cache/cache.service';
-import { Answer } from '@/schema/answer.schema';
 import { PopularSurveyHelper } from '@/survey/helper/popular-survey.helper';
 import { ErrorMessage } from '@/common/constant/error-message';
 import { QueryHelper } from '@/survey/helper/query.helper';
@@ -18,15 +17,16 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, SortOrder, Types } from 'mongoose';
 import { FindSurveyDto } from '@/survey/dto/find-survey.dto';
-import { FindPopularSurveyDto } from '../dto/find-popular-survey.dto';
+import { FindPopularSurveyDto } from '@/survey/dto/find-popular-survey.dto';
 import { SurveyResponseDto } from '@/survey/dto/survey-response.dto';
 import { TransformHelper } from '@/survey/helper/transform.helper';
+import { SurveyRepository } from '@/survey/repository/survey.repository';
 
 @Injectable()
 export class SurveyService {
   constructor(
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
-    @InjectModel(Answer.name) private answerModel: Model<Answer>,
+    private surveyRepository: SurveyRepository,
     private queryHelper: QueryHelper,
     private popularSurveyHelper: PopularSurveyHelper,
     private transformHelper: TransformHelper,
@@ -41,11 +41,8 @@ export class SurveyService {
     createSurveyDto: CreateSurveyRequestDto,
   ): Promise<string> {
     return (
-      await this.surveyModel.create({
-        author,
-        ...createSurveyDto,
-      })
-    )._id.toString();
+      await this.surveyRepository.create(author, createSurveyDto)
+    ).toString();
   }
 
   async findAll(query: FindSurveyDto): Promise<PageDto<SurveyResponseDto[]>> {
@@ -67,13 +64,16 @@ export class SurveyService {
       findQuery.$or = [...(keywordQuery ? keywordQuery : [])];
     }
 
-    const total = await this.surveyModel.find(findQuery).count();
+    const total = await this.surveyRepository.findSurveysWithQueryCnt(
+      findQuery,
+    );
 
-    const data = await this.surveyModel
-      .find(findQuery)
-      .skip((page - 1) * offset)
-      .limit(offset)
-      .sort(sortQuery);
+    const data = await this.surveyRepository.findSurveysWithQuery(
+      page,
+      offset,
+      findQuery,
+      sortQuery,
+    );
 
     return new PageDto(
       page,
@@ -84,10 +84,7 @@ export class SurveyService {
   }
 
   async findOne(_id: Types.ObjectId): Promise<SurveyResponseDto> {
-    const survey = await this.surveyModel.findOne({
-      _id,
-      status: Status.NORMAL,
-    });
+    const survey = await this.surveyRepository.findOne(_id);
     if (!survey) throw new NotFoundException(ErrorMessage.NOT_FOUND);
 
     return this.transformHelper.toResponseDto(survey);
@@ -100,13 +97,7 @@ export class SurveyService {
   ): Promise<string> {
     await this.findOne(_id);
     await this.checkAuthority(_id, author);
-    await this.surveyModel.updateOne(
-      {
-        _id,
-        status: Status.NORMAL,
-      },
-      { $set: updateSurveyDto },
-    );
+    await this.surveyRepository.update(_id, updateSurveyDto);
 
     return _id.toString();
   }
@@ -114,25 +105,11 @@ export class SurveyService {
   async delete(_id: Types.ObjectId, author: string): Promise<void> {
     await this.findOne(_id);
     await this.checkAuthority(_id, author);
-    await this.surveyModel.updateOne(
-      {
-        _id,
-      },
-      {
-        $set: {
-          status: Status.DELETED,
-        },
-      },
-    );
+    await this.surveyRepository.delete(_id);
   }
 
   async checkAuthority(_id: Types.ObjectId, author: string): Promise<void> {
-    if (
-      !(await this.surveyModel.findOne({
-        author,
-        _id,
-      }))
-    ) {
+    if (!(await this.surveyRepository.checkAuthority(_id, author))) {
       throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
     }
   }
@@ -160,13 +137,16 @@ export class SurveyService {
       findQuery.$or = [...(keywordQuery ? keywordQuery : [])];
     }
 
-    const total = await this.surveyModel.find(findQuery).count();
+    const total = await this.surveyRepository.findSurveysWithQueryCnt(
+      findQuery,
+    );
 
-    const data = await this.surveyModel
-      .find(findQuery)
-      .skip((page - 1) * offset)
-      .limit(offset)
-      .sort(sortQuery);
+    const data = await this.surveyRepository.findSurveysWithQuery(
+      page,
+      offset,
+      findQuery,
+      sortQuery,
+    );
 
     return new PageDto(
       page,
@@ -218,24 +198,14 @@ export class SurveyService {
     endTime: Date,
   ): Promise<string[] | SurveyResponseDto[]> {
     // 응답률 가장 많은 것 가져오기
-    const popularSurvey: { _id: string; count: number }[] =
-      await this.answerModel.aggregate([
-        { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
-        { $group: { _id: '$survey', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 5 },
-      ]);
-    const popularSurveyIds = popularSurvey.map((item) => item._id);
-
-    // id로 객체 가져오기
-    const result = (await Promise.all(
-      popularSurveyIds.map(
-        async (item) => await this.surveyModel.findOne({ _id: item }),
-      ),
-    )) as Survey[];
+    const popularSurveys = await this.surveyRepository.findPopularSurvey(
+      startTime,
+      endTime,
+    );
+    const popularSurveyIds = popularSurveys.map((item) => item._id);
 
     // 응답률로 가져온게 5개 미만일 경우에 날짜로 가져오기
-    if (result.length !== 5) {
+    if (popularSurveys.length !== 5) {
       const surveyAtThatTime = await this.surveyModel
         .find({
           createdAt: {
@@ -249,20 +219,20 @@ export class SurveyService {
         .sort({
           createdAt: 1,
         })
-        .limit(5 - popularSurvey.length);
-      result.push(...surveyAtThatTime);
+        .limit(5 - popularSurveys.length);
+      popularSurveys.push(...surveyAtThatTime);
     }
 
     await this.cacheService.set(
       this.keyHelper.getPopularSurveyKey(endTime),
-      JSON.stringify(result.map((item) => item._id)),
+      JSON.stringify(popularSurveys.map((item) => item._id)),
     );
 
     switch (type) {
       case PopularSurveyResponseType.ID:
-        return result.map((item) => item._id);
+        return popularSurveys.map((item) => item._id.toString());
       case PopularSurveyResponseType.OBJECT:
-        return this.transformHelper.toArrayResponseDto(result);
+        return this.transformHelper.toArrayResponseDto(popularSurveys);
     }
   }
 }

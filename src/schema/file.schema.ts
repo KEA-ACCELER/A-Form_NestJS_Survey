@@ -1,6 +1,6 @@
 import { Status } from '@/common/constant/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type FileDocument = HydratedDocument<File>;
 
@@ -8,6 +8,8 @@ export type FileDocument = HydratedDocument<File>;
   timestamps: true,
 })
 export class File {
+  _id: Types.ObjectId;
+
   @Prop({ type: String })
   originName: string;
 
@@ -32,12 +34,14 @@ export class File {
   status: Status;
 
   constructor(
+    _id: Types.ObjectId,
     originName: string,
     s3Link: string,
     createdAt: Date,
     updatedAt: Date,
     status: Status,
   ) {
+    this._id = _id;
     this.originName = originName;
     this.s3Link = s3Link;
     this.createdAt = createdAt;
