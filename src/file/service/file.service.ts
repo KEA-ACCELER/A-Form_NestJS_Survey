@@ -1,15 +1,13 @@
+import { FileRepository } from '@/file/repository/file.repository';
 import { S3Helper } from '@/file/helper/s3.helper';
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { File } from '@/schema/file.schema';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class FileService {
   constructor(
     private s3Helper: S3Helper,
-    @InjectModel(File.name) private fileModel: Model<File>,
+    private fileRepository: FileRepository,
   ) {}
 
   async uploadFiles(files: Array<Express.Multer.File>): Promise<string[]> {
@@ -23,10 +21,10 @@ export class FileService {
 
             result.push(
               (
-                await this.fileModel.create({
-                  originName: file.originalname,
-                  s3Link: uploadData.Location,
-                })
+                await this.fileRepository.create(
+                  file.originalname,
+                  uploadData.Location,
+                )
               ).s3Link,
             );
           }),
