@@ -2,12 +2,13 @@ import { ABQuestionResponseDto } from '@/survey/dto/ab-question-response.dto';
 import { QuestionResponseDto } from '@/survey/dto/question-response.dto';
 import { Status, SurveyType } from '@/common/constant/enum';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 export class SurveyResponseDto {
   @ApiProperty({
     type: String,
   })
-  _id: string;
+  _id: Types.ObjectId;
 
   @ApiProperty({
     enum: SurveyType,
@@ -61,7 +62,7 @@ export class SurveyResponseDto {
   description?: string;
 
   constructor(
-    _id: string,
+    _id: Types.ObjectId,
     type: SurveyType,
     title: string,
     author: string,
