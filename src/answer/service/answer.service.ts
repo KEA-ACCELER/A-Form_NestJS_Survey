@@ -57,7 +57,6 @@ export class AnswerService {
   ): Promise<SurveyStatisticsResponseDto> {
     const totalCnt = await this.answerRepository.findAnswerCnt(survey);
 
-    // TODO: helper로 변경?
     const { type: surveyType } = await this.surveyService.findOne(survey);
 
     let statistics = [];
@@ -88,12 +87,11 @@ export class AnswerService {
       survey,
     );
 
-    // TODO: survey repository 변경 시 수정 필요
     const { questions } = (await this.surveyService.findOne(survey)) as {
       questions: Question[];
     };
 
-    statistics.map((item, idx) => {
+    statistics.map((item: NormalStatisticsResponseDto, idx) => {
       item.type = questions[idx].type;
       item.values.map((value: NormalStatisticsValue) => {
         value.percent = Math.round((value.count / totalCnt) * 100);
@@ -102,7 +100,7 @@ export class AnswerService {
 
     return statistics.map(
       (item) =>
-        new NormalStatisticsResponseDto(item.index, item.type, item.values),
+        new NormalStatisticsResponseDto(item.index, item.values, item.type),
     );
   }
 

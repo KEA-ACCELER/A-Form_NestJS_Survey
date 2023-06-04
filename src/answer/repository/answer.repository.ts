@@ -1,6 +1,10 @@
 import { CreateAnswerRequestDto } from '@/answer/dto/create-answer-request.dto';
 import { Answer } from '@/schema/answer.schema';
 import { Survey } from '@/schema/survey.schema';
+import {
+  ABStatisticsResponseDto,
+  NormalStatisticsResponseDto,
+} from '@/survey/dto/survey-statistics-response.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -33,7 +37,9 @@ export class AnswerRepository {
     )._id;
   }
 
-  async findNormalSurveyStatistics(survey: Types.ObjectId) {
+  async findNormalSurveyStatistics(
+    survey: Types.ObjectId,
+  ): Promise<NormalStatisticsResponseDto[]> {
     return await this.answerModel.aggregate([
       { $match: { survey } },
       { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
@@ -62,7 +68,9 @@ export class AnswerRepository {
     ]);
   }
 
-  async findABSurveyStatistics(survey: Types.ObjectId) {
+  async findABSurveyStatistics(
+    survey: Types.ObjectId,
+  ): Promise<ABStatisticsResponseDto[]> {
     return await this.answerModel.aggregate([
       { $match: { survey } },
       {
@@ -87,7 +95,11 @@ export class AnswerRepository {
     });
   }
 
-  async findMyAnsweredSurvey(author: string, page: number, offset: number) {
+  async findMyAnsweredSurvey(
+    author: string,
+    page: number,
+    offset: number,
+  ): Promise<{ _id: Types.ObjectId; survey: Survey }[]> {
     return await this.answerModel
       .find({
         author,
