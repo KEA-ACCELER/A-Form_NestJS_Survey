@@ -1,14 +1,12 @@
 import { PopularSurveyResponseType } from '@/common/constant/enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsDate, IsString } from 'class-validator';
-import moment from 'moment-timezone';
 
 export class FindPopularSurveyDto {
   @ApiProperty({
     type: Date,
+    example: '2023-06-01T20:00:00+09:00',
   })
-  @Transform(({ value }) => moment.tz(value, 'Asia/Seoul').utc().toDate())
   @IsDate()
   date: Date;
 

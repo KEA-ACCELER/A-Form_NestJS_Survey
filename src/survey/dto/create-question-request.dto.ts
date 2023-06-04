@@ -29,7 +29,11 @@ export class CreateQuestionRequestDto {
   @IsNotEmpty()
   isRequired: boolean;
 
-  @ApiProperty({ isArray: true, type: CreateSelectionRequestDto })
+  @ApiProperty({
+    isArray: true,
+    type: CreateSelectionRequestDto,
+    required: false,
+  })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })

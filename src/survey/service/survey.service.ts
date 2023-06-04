@@ -1,3 +1,5 @@
+import { KeyHelper } from '@/cache/helper/key.helper';
+import { CacheService } from '@/cache/cache.service';
 import { Answer } from '@/schema/answer.schema';
 import { PopularSurveyHelper } from '@/survey/helper/popular-survey.helper';
 import { ErrorMessage } from '@/common/constant/error-message';
@@ -9,6 +11,7 @@ import { CreateSurveyRequestDto } from '@/survey/dto/create-survey-request.dto';
 import { Survey } from '@/schema/survey.schema';
 import {
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -27,7 +30,11 @@ export class SurveyService {
     private queryHelper: QueryHelper,
     private popularSurveyHelper: PopularSurveyHelper,
     private transformHelper: TransformHelper,
+    private cacheService: CacheService,
+    private keyHelper: KeyHelper,
   ) {}
+
+  private readonly logger = new Logger(SurveyService.name);
 
   async create(
     author: string,
@@ -176,21 +183,64 @@ export class SurveyService {
   ): Promise<SurveyResponseDto[] | string[]> {
     const [startTime, endTime] =
       this.popularSurveyHelper.getResponseTimeRange(query);
+    const cache = await this.cacheService.get(
+      this.keyHelper.getPopularSurveyKey(endTime),
+    );
 
-    const popularSurvey = await this.answerModel.aggregate([
-      { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
-      { $group: { _id: '$survey' } },
-      { $limit: 5 },
-    ]);
+    return cache
+      ? await this.findPopularFromCache(query.type, cache)
+      : await this.findPopularWithoutCache(query.type, startTime, endTime);
+  }
 
+  async findPopularFromCache(
+    type: PopularSurveyResponseType,
+    cache: string,
+  ): Promise<string[] | SurveyResponseDto[]> {
+    const popularSurveyIds = JSON.parse(cache);
+    this.logger.debug('Using Cache');
+
+    switch (type) {
+      case PopularSurveyResponseType.ID:
+        return popularSurveyIds;
+      case PopularSurveyResponseType.OBJECT:
+        return await Promise.all(
+          popularSurveyIds.map(
+            async (item: string) =>
+              await this.findOne(new Types.ObjectId(item)),
+          ),
+        );
+    }
+  }
+
+  async findPopularWithoutCache(
+    type: PopularSurveyResponseType,
+    startTime: Date,
+    endTime: Date,
+  ): Promise<string[] | SurveyResponseDto[]> {
+    // 응답률 가장 많은 것 가져오기
+    const popularSurvey: { _id: string; count: number }[] =
+      await this.answerModel.aggregate([
+        { $match: { createdAt: { $gte: startTime, $lt: endTime } } },
+        { $group: { _id: '$survey', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+      ]);
     const popularSurveyIds = popularSurvey.map((item) => item._id);
 
-    if (popularSurvey.length !== 5) {
+    // id로 객체 가져오기
+    const result = (await Promise.all(
+      popularSurveyIds.map(
+        async (item) => await this.surveyModel.findOne({ _id: item }),
+      ),
+    )) as Survey[];
+
+    // 응답률로 가져온게 5개 미만일 경우에 날짜로 가져오기
+    if (result.length !== 5) {
       const surveyAtThatTime = await this.surveyModel
         .find({
           createdAt: {
             $gte: startTime,
-            $lte: endTime,
+            $lt: endTime,
           },
           _id: {
             $nin: popularSurveyIds,
@@ -200,12 +250,19 @@ export class SurveyService {
           createdAt: 1,
         })
         .limit(5 - popularSurvey.length);
-
-      popularSurvey.push(...surveyAtThatTime);
+      result.push(...surveyAtThatTime);
     }
 
-    return query.type === PopularSurveyResponseType.OBJECT
-      ? this.transformHelper.toArrayResponseDto(popularSurvey)
-      : popularSurvey.map((item) => item._id);
+    await this.cacheService.set(
+      this.keyHelper.getPopularSurveyKey(endTime),
+      JSON.stringify(result.map((item) => item._id)),
+    );
+
+    switch (type) {
+      case PopularSurveyResponseType.ID:
+        return result.map((item) => item._id);
+      case PopularSurveyResponseType.OBJECT:
+        return this.transformHelper.toArrayResponseDto(result);
+    }
   }
 }

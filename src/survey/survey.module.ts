@@ -1,3 +1,5 @@
+import { KeyHelper } from '@/cache/helper/key.helper';
+import { CacheModule } from '@/cache/cache.module';
 import { Answer, AnswerSchema } from '@/schema/answer.schema';
 import { PopularSurveyHelper } from './helper/popular-survey.helper';
 import { TransformHelper } from '@/survey/helper/transform.helper';
@@ -18,8 +20,15 @@ import { SurveyController } from '@/survey/controller/survey.controller';
     ]),
     HttpModule,
     forwardRef(() => AnswerModule),
+    CacheModule,
   ],
-  providers: [SurveyService, QueryHelper, TransformHelper, PopularSurveyHelper],
+  providers: [
+    SurveyService,
+    QueryHelper,
+    TransformHelper,
+    PopularSurveyHelper,
+    KeyHelper,
+  ],
   controllers: [SurveyController],
   exports: [SurveyService],
 })

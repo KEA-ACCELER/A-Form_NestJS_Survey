@@ -1,12 +1,8 @@
-import { FindPopularSurveyDto } from './../dto/find-popular-survey.dto';
+import { FindPopularSurveyDto } from '@/survey/dto/find-popular-survey.dto';
 
 export class PopularSurveyHelper {
   getResponseTimeRange(query: FindPopularSurveyDto): [Date, Date] {
     const { date: endTime } = query;
-
-    endTime.setMinutes(0);
-    endTime.setSeconds(0);
-
     const startTime = this.getStartTime(endTime);
 
     return [startTime, endTime];
