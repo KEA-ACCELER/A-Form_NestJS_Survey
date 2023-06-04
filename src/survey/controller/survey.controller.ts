@@ -1,3 +1,4 @@
+import { FindPopularSurveyDtoPipe } from '@/survey/pipe/find-popular-survey.pipe';
 import { ABQuestionResponseDto } from '@/survey/dto/ab-question-response.dto';
 import { QuestionResponseDto } from '@/survey/dto/question-response.dto';
 import {
@@ -21,6 +22,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
 import { UpdateSurveyRequestDto } from '@/survey/dto/update-survey-request.dto';
@@ -87,6 +89,7 @@ export class SurveyController {
       ],
     },
   })
+  @UsePipes(FindPopularSurveyDtoPipe)
   async findPopular(
     @Query() query: FindPopularSurveyDto,
   ): Promise<SurveyResponseDto[] | string[]> {

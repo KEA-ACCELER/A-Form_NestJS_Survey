@@ -240,7 +240,7 @@ export class SurveyService {
         .find({
           createdAt: {
             $gte: startTime,
-            $lte: endTime,
+            $lt: endTime,
           },
           _id: {
             $nin: popularSurveyIds,
@@ -250,7 +250,6 @@ export class SurveyService {
           createdAt: 1,
         })
         .limit(5 - popularSurvey.length);
-
       result.push(...surveyAtThatTime);
     }
 

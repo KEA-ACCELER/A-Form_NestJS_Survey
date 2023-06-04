@@ -9,4 +9,6 @@ export enum ErrorMessage {
   INVALID_OBJECT_ID = 'Invalid objectId',
 
   USER_API_ERR = 'User API Connection Err',
+
+  INVALID_DATE = 'Date cannot be in the future',
 }
