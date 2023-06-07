@@ -71,22 +71,26 @@ export class AnswerRepository {
   async findABSurveyStatistics(
     survey: Types.ObjectId,
   ): Promise<ABStatisticsResponseDto[]> {
-    return await this.answerModel.aggregate([
-      { $match: { survey } },
-      {
-        $group: {
-          _id: '$answers',
-          count: { $sum: 1 },
+    return await this.answerModel
+      .aggregate([
+        { $match: { survey } },
+        {
+          $group: {
+            _id: '$answers',
+            count: { $sum: 1 },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          type: '$_id',
-          count: 1,
+        {
+          $project: {
+            _id: 0,
+            type: '$_id',
+            count: 1,
+          },
         },
-      },
-    ]);
+      ])
+      .sort({
+        type: 1,
+      });
   }
 
   async findMyAnsweredSurveyCnt(author: string): Promise<number> {

@@ -125,7 +125,7 @@ export class AnswerService {
           statistics.push(new ABStatisticsResponseDto(ABSurvey.B, 0, 0));
           break;
         case ABSurvey.B:
-          statistics.push(new ABStatisticsResponseDto(ABSurvey.A, 0, 0));
+          statistics.unshift(new ABStatisticsResponseDto(ABSurvey.A, 0, 0));
           break;
       }
     }
