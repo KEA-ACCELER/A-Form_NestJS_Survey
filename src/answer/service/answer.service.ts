@@ -63,7 +63,7 @@ export class AnswerService {
 
     switch ((await this.surveyService.findOne(survey)).type) {
       case SurveyType.NORMAL: {
-        statistics = await this.findNormalSurveyStatistics(survey, totalCnt);
+        statistics = await this.findNormalSurveyStatistics(survey);
         break;
       }
       case SurveyType.AB: {
@@ -81,7 +81,6 @@ export class AnswerService {
   // index 기준으로 그룹화하고, 각 그룹의 수 계산
   async findNormalSurveyStatistics(
     survey: Types.ObjectId,
-    totalCnt: number,
   ): Promise<NormalStatisticsResponseDto[]> {
     const statistics = await this.answerRepository.findNormalSurveyStatistics(
       survey,
@@ -93,7 +92,10 @@ export class AnswerService {
 
     statistics.map((item: NormalStatisticsResponseDto) => {
       item.type = questions[item.index].type;
-      item.values.sort((a, b) => a.answer.localeCompare(b.answer));
+      item.values.sort((a, b) => a.answer - b.answer);
+
+      // totalCnt는 해당 question의 selection에 대한 응답 개수
+      const totalCnt = item.values.reduce((acc, value) => acc + value.count, 0);
       item.values.map((value: NormalStatisticsValue) => {
         value.percent = Math.round((value.count / totalCnt) * 100);
       });
