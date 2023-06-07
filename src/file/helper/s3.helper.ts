@@ -1,36 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class S3Helper {
   private readonly s3;
-  private endpoint = new AWS.Endpoint(process.env.AWS_ENDPOINT || '');
+  private endpoint = process.env.AWS_ENDPOINT;
   private region = process.env.REGION;
-  private accessKey = process.env.AWS_ACCESS_KEY_ID || '';
+  private accessKeyId = process.env.AWS_ACCESS_KEY_ID || '';
   private secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || '';
+  private bucketName = process.env.S3_BUCKET_NAME || '';
 
   constructor() {
-    this.s3 = new AWS.S3({
-      endpoint: this.endpoint,
+    this.s3 = new S3Client({
       region: this.region,
       credentials: {
-        accessKeyId: this.accessKey,
+        accessKeyId: this.accessKeyId,
         secretAccessKey: this.secretAccessKey,
       },
+      endpoint: this.endpoint,
+      forcePathStyle: true,
     });
   }
 
   async uploadFile(
     file: Express.Multer.File,
     fileName: string,
-  ): Promise<ManagedUpload.SendData> {
-    return await this.s3
-      .upload({
-        Bucket: process.env.S3_BUCKET_NAME || '',
+  ): Promise<string> {
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.bucketName,
         Key: fileName,
         Body: file.buffer,
-      })
-      .promise();
+        ACL: 'public-read',
+      }),
+    );
+
+    return `${this.endpoint}${this.bucketName}/${fileName}`;
   }
 }
