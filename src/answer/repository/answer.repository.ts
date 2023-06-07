@@ -55,7 +55,7 @@ export class AnswerRepository {
           $group: {
             _id: '$_id.index',
             values: {
-              $push: { answer: { $toString: '$_id.value' }, count: '$count' },
+              $push: { answer: '$_id.value', count: '$count' },
             },
           },
         },
