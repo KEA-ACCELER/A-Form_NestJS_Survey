@@ -4,9 +4,9 @@ import { IsArray, IsEnum, IsNumber } from 'class-validator';
 
 export class NormalStatisticsValue {
   @ApiProperty({
-    type: String,
+    type: Number,
   })
-  index: string;
+  answer: number;
 
   @ApiProperty({
     type: Number,
@@ -20,8 +20,8 @@ export class NormalStatisticsValue {
   @IsNumber()
   percent?: number;
 
-  constructor(index: string, count: number, percent: number) {
-    this.index = index;
+  constructor(answer: number, count: number, percent: number) {
+    this.answer = answer;
     this.count = count;
     this.percent = percent;
   }

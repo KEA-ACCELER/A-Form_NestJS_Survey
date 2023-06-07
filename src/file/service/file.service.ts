@@ -17,15 +17,12 @@ export class FileService {
       ? await Promise.all(
           files.map(async (file) => {
             const fileName = uuidv4();
-            const uploadData = await this.s3Helper.uploadFile(file, fileName);
+            const s3Link = await this.s3Helper.uploadFile(file, fileName);
+            console.log(s3Link);
 
             result.push(
-              (
-                await this.fileRepository.create(
-                  file.originalname,
-                  uploadData.Location,
-                )
-              ).s3Link,
+              (await this.fileRepository.create(file.originalname, s3Link))
+                .s3Link,
             );
           }),
         )
