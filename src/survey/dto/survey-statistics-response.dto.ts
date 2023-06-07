@@ -6,7 +6,7 @@ export class NormalStatisticsValue {
   @ApiProperty({
     type: String,
   })
-  index: string;
+  answer: string;
 
   @ApiProperty({
     type: Number,
@@ -20,8 +20,8 @@ export class NormalStatisticsValue {
   @IsNumber()
   percent?: number;
 
-  constructor(index: string, count: number, percent: number) {
-    this.index = index;
+  constructor(answer: string, count: number, percent: number) {
+    this.answer = answer;
     this.count = count;
     this.percent = percent;
   }
