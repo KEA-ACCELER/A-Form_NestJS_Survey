@@ -40,32 +40,36 @@ export class AnswerRepository {
   async findNormalSurveyStatistics(
     survey: Types.ObjectId,
   ): Promise<NormalStatisticsResponseDto[]> {
-    return await this.answerModel.aggregate([
-      { $match: { survey } },
-      { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
-      { $unwind: '$answers' },
-      {
-        $group: {
-          _id: { index: '$index', value: '$answers' },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: '$_id.index',
-          values: {
-            $push: { answer: { $toString: '$_id.value' }, count: '$count' },
+    return await this.answerModel
+      .aggregate([
+        { $match: { survey } },
+        { $unwind: { path: '$answers', includeArrayIndex: 'index' } },
+        { $unwind: '$answers' },
+        {
+          $group: {
+            _id: { index: '$index', value: '$answers' },
+            count: { $sum: 1 },
           },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          index: '$_id',
-          values: '$values',
+        {
+          $group: {
+            _id: '$_id.index',
+            values: {
+              $push: { answer: { $toString: '$_id.value' }, count: '$count' },
+            },
+          },
         },
-      },
-    ]);
+        {
+          $project: {
+            _id: 0,
+            index: '$_id',
+            values: '$values',
+          },
+        },
+      ])
+      .sort({
+        index: 1,
+      });
   }
 
   async findABSurveyStatistics(

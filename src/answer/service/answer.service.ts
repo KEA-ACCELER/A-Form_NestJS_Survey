@@ -91,8 +91,9 @@ export class AnswerService {
       questions: Question[];
     };
 
-    statistics.map((item: NormalStatisticsResponseDto, idx) => {
-      item.type = questions[idx].type;
+    statistics.map((item: NormalStatisticsResponseDto) => {
+      item.type = questions[item.index].type;
+      item.values.sort((a, b) => a.answer.localeCompare(b.answer));
       item.values.map((value: NormalStatisticsValue) => {
         value.percent = Math.round((value.count / totalCnt) * 100);
       });
