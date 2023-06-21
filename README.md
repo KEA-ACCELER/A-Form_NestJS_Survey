@@ -1,3 +1,12 @@
+# 🌼 모두를 위한 설문조사 플랫폼, A-FORM
+
+![a-form](/resource/a-form.png)
+설문 조사 생성 및 분석 프로세스를 단순화하여 설문 조사 제작자와 응답자 간의 참여와 피드백을 높일 수 있는 간편한 설문 조사 플랫폼입니다.
+
+**개발 기간** 2023.03 ~ 2023.05 <br/>
+**사이트 바로가기** https://server.acceler.kr/ (🔧업데이트 중)<br/>
+**Team repo** https://github.com/orgs/KEA-ACCELER/repositories <br/>
+
 # 😺 Stacks
 
 <img src="https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white"> <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"> <img src="https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=white"> <img src="https://img.shields.io/badge/mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white"> <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/aws ec2-FF9900?style=for-the-badge&logo=amazon-ec2&logoColor=white"> <img src="https://img.shields.io/badge/aws s3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white"> <img src="https://img.shields.io/badge/swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=white">
